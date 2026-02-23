@@ -254,11 +254,36 @@
       display:flex; align-items:center; justify-content:center;
       font-size: 13px;
     }
+
+    /* Screens */
+    .screen { display:none; }
+    .screen.active { display:block; }
+    .titleCenter{
+      text-align:center;
+      font-size:20px;
+      font-weight:650;
+      margin-bottom: 14px;
+    }
+    .powerBtn{
+      min-width: 160px;
+    }
+    .powerBtn.off{
+      border-color: rgba(255,255,255,0.18) !important;
+      background: rgba(255,255,255,0.04) !important;
+      color: rgba(245,250,255,0.70) !important;
+    }
+    .percentBig{
+      font-size:48px;
+      font-weight:800;
+      letter-spacing: -0.5px;
+    }
   </style>
 </head>
 
 <body>
   <div class="wrap">
+
+    <!-- Top bar -->
     <div class="topbar">
       <div class="left">
         <div class="pill" id="btnBack" title="Назад">≡</div>
@@ -271,45 +296,80 @@
       </div>
     </div>
 
-    <div class="sectionRow">
-      <div class="secLeft">
-        <div class="secDot"></div>
-        <div id="floorName">Main Floor</div>
+    <!-- HOME SCREEN -->
+    <div class="screen active" id="screenHome">
+      <div class="sectionRow">
+        <div class="secLeft">
+          <div class="secDot"></div>
+          <div id="floorName">Main Floor</div>
+        </div>
+        <div class="more">More ›</div>
       </div>
-      <div class="more">More ›</div>
-    </div>
 
-    <div class="card">
-      <div class="metaRow">
-        <div class="badge" id="statusBadge">
-          <span class="flame">🔥</span> <span id="statusText">Heating</span>
+      <div class="card">
+        <div class="metaRow">
+          <div class="badge" id="statusBadge">
+            <span class="flame">🔥</span> <span id="statusText">Heating</span>
+          </div>
+        </div>
+
+        <div class="big">
+          <div class="temp" id="tempValue">69</div>
+          <div class="unit" id="tempUnit">°C</div>
+        </div>
+
+        <div class="setRow">
+          <div class="setBtn heat center" id="heatSet">
+            <span class="dotHeat"></span>
+            <span>76</span>
+          </div>
+        </div>
+
+        <div class="controls">
+          <div class="ctrl" id="minus" title="-">−</div>
+          <div class="ctrl" id="send" title="Send">⇧</div>
+          <div class="ctrl" id="plus" title="+">＋</div>
+        </div>
+
+        <div class="subHint" id="hint">
+          Нажми ⇧ чтобы отправить текущую температуру боту
         </div>
       </div>
+    </div>
 
-      <div class="big">
-        <div class="temp" id="tempValue">69</div>
-        <div class="unit" id="tempUnit">°C</div>
-      </div>
+    <!-- REPORTS SCREEN -->
+    <div class="screen" id="screenReports">
+      <div class="card" style="margin-top:14px;">
+        <div class="titleCenter">Air Conditioner</div>
 
-      <div class="setRow">
-        <div class="setBtn heat center" id="heatSet">
-          <span class="dotHeat"></span>
-          <span>76</span>
+        <div style="display:flex;justify-content:center;margin-bottom:18px;">
+          <div class="setBtn heat center powerBtn" id="powerBtn">ON</div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;align-items:center;gap:12px;">
+          <div class="percentBig" id="percentValue">50%</div>
+
+          <div class="controls">
+            <div class="ctrl" id="percentMinus">−</div>
+            <div class="ctrl" id="percentPlus">＋</div>
+          </div>
+
+          <div class="subHint">ON/OFF ва 0–100% бошқарув</div>
         </div>
       </div>
+    </div>
 
-      <div class="controls">
-        <div class="ctrl" id="minus" title="-">−</div>
-        <div class="ctrl" id="send" title="Send">⇧</div>
-        <div class="ctrl" id="plus" title="+">＋</div>
-      </div>
-
-      <div class="subHint" id="hint">
-        Нажми ⇧ чтобы отправить текущую температуру боту
+    <!-- DISCOVER SCREEN -->
+    <div class="screen" id="screenDiscover">
+      <div class="card" style="margin-top:14px;">
+        <div class="titleCenter">Discover</div>
+        <div class="subHint">Бу ерга кейин функция қўшамиз.</div>
       </div>
     </div>
+
   </div>
 
+  <!-- Bottom nav -->
   <div class="bottomNav">
     <div class="navInner">
       <div class="navItem active" data-tab="home">
@@ -330,50 +390,106 @@
   <script>
     const tg = window.Telegram?.WebApp;
 
+    // HOME (thermostat)
     let temp = 69;  // текущая
     let heat = 76;  // setpoint
 
     const elTemp = document.getElementById("tempValue");
     const elHeat = document.getElementById("heatSet").querySelector("span:last-child");
 
-    function render(){
+    function renderHome(){
       elTemp.textContent = String(temp);
       elHeat.textContent = String(heat);
     }
 
-    function sendToBot(){
+    function sendThermostatToBot(){
       if (!tg) return;
-
       const payload = {
         type: "thermostat",
         temp: temp,
         heat: heat,
         ts: Date.now()
       };
-
       tg.sendData(JSON.stringify(payload));
       tg.showAlert("Отправлено боту: " + temp);
     }
 
     document.getElementById("minus").addEventListener("click", () => {
       temp = temp - 1;
-      render();
+      renderHome();
     });
     document.getElementById("plus").addEventListener("click", () => {
       temp = temp + 1;
-      render();
+      renderHome();
     });
-    document.getElementById("send").addEventListener("click", sendToBot);
+    document.getElementById("send").addEventListener("click", sendThermostatToBot);
 
     document.getElementById("heatSet").addEventListener("click", () => {
       heat = heat + 1;
-      render();
+      renderHome();
     });
+
+    // REPORTS (AC control)
+    let powerOn = true;
+    let percent = 50;
+
+    const powerBtn = document.getElementById("powerBtn");
+    const percentValue = document.getElementById("percentValue");
+
+    function renderReports(){
+      percentValue.textContent = percent + "%";
+      powerBtn.textContent = powerOn ? "ON" : "OFF";
+      powerBtn.classList.toggle("off", !powerOn);
+    }
+
+    function sendACToBot(){
+      if (!tg) return;
+      const payload = {
+        type: "ac_control",
+        power: powerOn,
+        percent: percent,
+        ts: Date.now()
+      };
+      tg.sendData(JSON.stringify(payload));
+    }
+
+    powerBtn.addEventListener("click", () => {
+      powerOn = !powerOn;
+      renderReports();
+      sendACToBot();
+    });
+
+    document.getElementById("percentMinus").addEventListener("click", () => {
+      percent = Math.max(0, percent - 5);
+      renderReports();
+      sendACToBot();
+    });
+
+    document.getElementById("percentPlus").addEventListener("click", () => {
+      percent = Math.min(100, percent + 5);
+      renderReports();
+      sendACToBot();
+    });
+
+    // Screens switch
+    const screens = {
+      home: document.getElementById("screenHome"),
+      reports: document.getElementById("screenReports"),
+      discover: document.getElementById("screenDiscover"),
+    };
+
+    function showScreen(name){
+      Object.values(screens).forEach(s => s.classList.remove("active"));
+      screens[name].classList.add("active");
+    }
 
     document.querySelectorAll(".navItem").forEach((item) => {
       item.addEventListener("click", () => {
         document.querySelectorAll(".navItem").forEach(n => n.classList.remove("active"));
         item.classList.add("active");
+
+        const tab = item.dataset.tab;
+        showScreen(tab);
       });
     });
 
@@ -382,7 +498,8 @@
       tg.expand();
     }
 
-    render();
+    renderHome();
+    renderReports();
   </script>
 </body>
 </html>
