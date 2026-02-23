@@ -319,9 +319,28 @@
         </div>
 
         <div class="setRow">
-          <div class="setBtn heat center" id="heatSet">
+          <div class="setBtn heat center" id="heatSet" style="gap:10px;">
             <span class="dotHeat"></span>
-            <span>76</span>
+
+            <input
+              id="targetInput"
+              type="number"
+              inputmode="numeric"
+              min="-50"
+              max="60"
+              step="1"
+              value="30"
+              style="
+                width: 72px;
+                background: transparent;
+                border: 0;
+                outline: none;
+                color: inherit;
+                font: inherit;
+                font-weight: 750;
+                text-align: center;
+              "
+            />
           </div>
         </div>
 
@@ -391,17 +410,24 @@
     const tg = window.Telegram?.WebApp;
 
     // HOME (thermostat)
-    let temp = 69;  // текущая
-    let heat = 76;  // setpoint
-
+    let temp = 20; // current/selected temperature
     const elTemp = document.getElementById("tempValue");
-    const elHeat = document.getElementById("heatSet").querySelector("span:last-child");
-
-    function renderHome(){
-      elTemp.textContent = String(temp);
-      elHeat.textContent = String(heat);
+    const targetInput = document.getElementById("targetInput");
+    
+    function clamp(v, min, max){
+      return Math.max(min, Math.min(max, v));
     }
-
+    
+    function setTemp(v){
+      temp = clamp(parseInt(v || 0, 10), -50, 60);
+      elTemp.textContent = String(temp);
+      targetInput.value = String(temp);
+    }
+    
+    function renderHome(){
+      setTemp(targetInput.value);
+    }
+    
     function sendThermostatToBot(){
       if (!tg) return;
       const payload = {
@@ -414,20 +440,34 @@
       tg.showAlert("Отправлено боту: " + temp);
     }
 
+    // фойдаланувчи input'га қўлда ёзса ҳам 20° шуга тенг бўлади
+    targetInput.addEventListener("input", () => {
+      setTemp(targetInput.value);
+    });
+    
     document.getElementById("minus").addEventListener("click", () => {
-      temp = temp - 1;
-      renderHome();
+      setTemp(temp - 1);
     });
+    
     document.getElementById("plus").addEventListener("click", () => {
-      temp = temp + 1;
-      renderHome();
+      setTemp(temp + 1);
     });
-    document.getElementById("send").addEventListener("click", sendThermostatToBot);
+    
+    // ⇧ босилганда — танланган градус ботга юборилади
+    document.getElementById("send").addEventListener("click", () => {
+      if (!tg) return;
+    
+      const payload = {
+        type: "set_home_temperature",
+        value: temp,
+        ts: Date.now()
+      };
+    
+      tg.sendData(JSON.stringify(payload));
+      tg.showAlert("Уй ҳарорати: " + temp + "°C");
+    });
 
-    document.getElementById("heatSet").addEventListener("click", () => {
-      heat = heat + 1;
-      renderHome();
-    });
+
 
     // REPORTS (AC control)
     let powerOn = true;
@@ -503,5 +543,6 @@
   </script>
 </body>
 </html>
+
 
 
