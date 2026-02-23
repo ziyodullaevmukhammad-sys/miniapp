@@ -37,7 +37,6 @@
       padding: 14px 14px 92px;
     }
 
-    /* Top bar */
     .topbar{
       display:flex;
       align-items:center;
@@ -74,14 +73,13 @@
       text-overflow: ellipsis;
       max-width: 220px;
     }
-    .caret{ opacity:.75; font-size: 14px; }
+
     .topbar .right{
       display:flex;
       gap:10px;
       align-items:center;
     }
 
-    /* Section header row (Main Floor + More) */
     .sectionRow{
       display:flex;
       align-items:center;
@@ -107,7 +105,6 @@
       user-select:none;
     }
 
-    /* Card */
     .card{
       border: 1px solid var(--stroke);
       background: linear-gradient(180deg, var(--panel2), var(--panel));
@@ -125,13 +122,7 @@
       font-size: 13px;
       padding-bottom: 4px;
     }
-    .metaRow .meta{
-      display:flex; align-items:center; gap:6px;
-      padding: 6px 8px;
-      border-radius: 12px;
-      border: 1px solid var(--stroke);
-      background: rgba(255,255,255,0.04);
-    }
+
     .badge{
       display:flex; align-items:center; gap:6px;
       padding: 6px 10px;
@@ -184,23 +175,17 @@
       user-select:none;
       cursor:pointer;
     }
+    .setBtn.center{
+      min-width: 160px;
+    }
     .setBtn.heat{
       border-color: rgba(255,122,24,0.55);
       color: rgba(255,210,185,0.98);
-    }
-    .setBtn.cool{
-      border-color: rgba(46,166,255,0.55);
-      color: rgba(190,230,255,0.98);
     }
     .dotHeat{
       width: 10px; height: 10px; border-radius: 4px;
       background: rgba(255,122,24,0.9);
       box-shadow: 0 0 12px rgba(255,122,24,0.35);
-    }
-    .dotCool{
-      width: 10px; height: 10px; border-radius: 4px;
-      background: rgba(46,166,255,0.9);
-      box-shadow: 0 0 12px rgba(46,166,255,0.35);
     }
 
     .controls{
@@ -226,7 +211,6 @@
       margin-top: 10px;
     }
 
-    /* Bottom nav */
     .bottomNav{
       position: fixed;
       left: 0; right: 0; bottom: 0;
@@ -270,14 +254,11 @@
       display:flex; align-items:center; justify-content:center;
       font-size: 13px;
     }
-
-    a { color: inherit; }
   </style>
 </head>
 
 <body>
   <div class="wrap">
-    <!-- Top bar -->
     <div class="topbar">
       <div class="left">
         <div class="pill" id="btnBack" title="Назад">≡</div>
@@ -290,7 +271,6 @@
       </div>
     </div>
 
-    <!-- Section -->
     <div class="sectionRow">
       <div class="secLeft">
         <div class="secDot"></div>
@@ -299,12 +279,8 @@
       <div class="more">More ›</div>
     </div>
 
-    <!-- Thermostat card -->
     <div class="card">
       <div class="metaRow">
-        <div class="meta" title="Влажность">
-          💧 <span id="humidity">30%</span>
-        </div>
         <div class="badge" id="statusBadge">
           <span class="flame">🔥</span> <span id="statusText">Heating</span>
         </div>
@@ -316,13 +292,9 @@
       </div>
 
       <div class="setRow">
-        <div class="setBtn heat" id="heatSet">
+        <div class="setBtn heat center" id="heatSet">
           <span class="dotHeat"></span>
           <span>76</span>
-        </div>
-        <div class="setBtn cool" id="coolSet">
-          <span class="dotCool"></span>
-          <span>81</span>
         </div>
       </div>
 
@@ -338,7 +310,6 @@
     </div>
   </div>
 
-  <!-- Bottom nav -->
   <div class="bottomNav">
     <div class="navInner">
       <div class="navItem active" data-tab="home">
@@ -359,35 +330,27 @@
   <script>
     const tg = window.Telegram?.WebApp;
 
-    // базовые значения как на скрине
-    let temp = 69;         // текущая
-    let heat = 76;         // setpoint heat
-    let cool = 81;         // setpoint cool
-    let humidity = 33;     // %
+    let temp = 69;  // текущая
+    let heat = 76;  // setpoint
 
     const elTemp = document.getElementById("tempValue");
-    const elHumidity = document.getElementById("humidity");
     const elHeat = document.getElementById("heatSet").querySelector("span:last-child");
-    const elCool = document.getElementById("coolSet").querySelector("span:last-child");
 
     function render(){
       elTemp.textContent = String(temp);
-      elHumidity.textContent = humidity + "%";
       elHeat.textContent = String(heat);
-      elCool.textContent = String(cool);
     }
 
     function sendToBot(){
       if (!tg) return;
-      // отправим JSON, чтобы потом легко расширять (комнаты, режимы и т.д.)
+
       const payload = {
         type: "thermostat",
         temp: temp,
         heat: heat,
-        cool: cool,
-        humidity: humidity,
         ts: Date.now()
       };
+
       tg.sendData(JSON.stringify(payload));
       tg.showAlert("Отправлено боту: " + temp);
     }
@@ -402,17 +365,11 @@
     });
     document.getElementById("send").addEventListener("click", sendToBot);
 
-    // клики по setpoint — редактирование
     document.getElementById("heatSet").addEventListener("click", () => {
       heat = heat + 1;
       render();
     });
-    document.getElementById("coolSet").addEventListener("click", () => {
-      cool = cool + 1;
-      render();
-    });
 
-    // нижняя навигация (пока просто переключение активного)
     document.querySelectorAll(".navItem").forEach((item) => {
       item.addEventListener("click", () => {
         document.querySelectorAll(".navItem").forEach(n => n.classList.remove("active"));
@@ -420,19 +377,12 @@
       });
     });
 
-    // Telegram init
     if (tg) {
       tg.ready();
       tg.expand();
-
-      // можно включить красивую главную кнопку Telegram (по желанию)
-      // tg.MainButton.setText("Отправить");
-      // tg.MainButton.show();
-      // tg.MainButton.onClick(sendToBot);
     }
 
     render();
   </script>
 </body>
 </html>
-
