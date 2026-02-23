@@ -1,30 +1,438 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="ru">
 <head>
-  <meta charset="utf-8" />
+  <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Mini App</title>
+  <title>Smarthouse</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    :root{
+      --bg: #0b1220;
+      --panel: rgba(255,255,255,0.06);
+      --panel2: rgba(255,255,255,0.08);
+      --stroke: rgba(255,255,255,0.12);
+      --text: rgba(245,250,255,0.92);
+      --muted: rgba(245,250,255,0.60);
+      --muted2: rgba(245,250,255,0.45);
+
+      --heat: #ff7a18;
+      --cool: #2ea6ff;
+
+      --tg-bg: var(--tg-theme-bg-color, var(--bg));
+      --tg-text: var(--tg-theme-text-color, var(--text));
+      --tg-hint: var(--tg-theme-hint-color, var(--muted));
+    }
+
+    * { box-sizing: border-box; }
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      background: var(--tg-bg);
+      color: var(--tg-text);
+    }
+
+    .wrap{
+      max-width: 420px;
+      margin: 0 auto;
+      padding: 14px 14px 92px;
+    }
+
+    /* Top bar */
+    .topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding: 4px 2px 10px;
+    }
+    .topbar .left{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      min-width:0;
+    }
+    .pill{
+      width: 28px; height: 28px;
+      border-radius: 9px;
+      background: var(--panel);
+      border: 1px solid var(--stroke);
+      display:flex; align-items:center; justify-content:center;
+      color: var(--tg-text);
+      flex: 0 0 auto;
+      user-select:none;
+    }
+    .homeTitle{
+      display:flex;
+      align-items:center;
+      gap:6px;
+      min-width:0;
+    }
+    .homeTitle .name{
+      font-weight: 650;
+      letter-spacing: 0.2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 220px;
+    }
+    .caret{ opacity:.75; font-size: 14px; }
+    .topbar .right{
+      display:flex;
+      gap:10px;
+      align-items:center;
+    }
+
+    /* Section header row (Main Floor + More) */
+    .sectionRow{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding: 6px 2px 10px;
+      color: var(--tg-hint);
+      font-size: 13px;
+    }
+    .sectionRow .secLeft{
+      display:flex; align-items:center; gap:8px;
+      min-width:0;
+    }
+    .secDot{
+      width: 10px; height: 10px;
+      border-radius: 3px;
+      background: rgba(255,255,255,0.22);
+      border: 1px solid var(--stroke);
+      flex: 0 0 auto;
+    }
+    .sectionRow .more{
+      color: var(--tg-hint);
+      opacity: .9;
+      user-select:none;
+    }
+
+    /* Card */
+    .card{
+      border: 1px solid var(--stroke);
+      background: linear-gradient(180deg, var(--panel2), var(--panel));
+      border-radius: 18px;
+      padding: 14px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+    }
+
+    .metaRow{
+      display:flex;
+      align-items:center;
+      justify-content:flex-start;
+      gap:10px;
+      color: var(--tg-hint);
+      font-size: 13px;
+      padding-bottom: 4px;
+    }
+    .metaRow .meta{
+      display:flex; align-items:center; gap:6px;
+      padding: 6px 8px;
+      border-radius: 12px;
+      border: 1px solid var(--stroke);
+      background: rgba(255,255,255,0.04);
+    }
+    .badge{
+      display:flex; align-items:center; gap:6px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,122,24,0.35);
+      background: rgba(255,122,24,0.12);
+      color: rgba(255,210,185,0.95);
+      font-weight: 600;
+    }
+    .flame{ color: var(--heat); }
+
+    .big{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding: 14px 0 6px;
+    }
+    .big .temp{
+      font-size: 72px;
+      font-weight: 700;
+      letter-spacing: -1px;
+      line-height: 1;
+    }
+    .big .unit{
+      font-size: 22px;
+      opacity: .75;
+      margin-left: 6px;
+      transform: translateY(-18px);
+    }
+
+    .setRow{
+      display:flex;
+      gap: 12px;
+      justify-content:center;
+      padding-top: 6px;
+    }
+
+    .setBtn{
+      min-width: 126px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      padding: 11px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.02);
+      border: 1.5px solid var(--stroke);
+      color: var(--tg-text);
+      font-weight: 650;
+      user-select:none;
+      cursor:pointer;
+    }
+    .setBtn.heat{
+      border-color: rgba(255,122,24,0.55);
+      color: rgba(255,210,185,0.98);
+    }
+    .setBtn.cool{
+      border-color: rgba(46,166,255,0.55);
+      color: rgba(190,230,255,0.98);
+    }
+    .dotHeat{
+      width: 10px; height: 10px; border-radius: 4px;
+      background: rgba(255,122,24,0.9);
+      box-shadow: 0 0 12px rgba(255,122,24,0.35);
+    }
+    .dotCool{
+      width: 10px; height: 10px; border-radius: 4px;
+      background: rgba(46,166,255,0.9);
+      box-shadow: 0 0 12px rgba(46,166,255,0.35);
+    }
+
+    .controls{
+      margin-top: 12px;
+      display:flex;
+      gap: 10px;
+      justify-content:center;
+    }
+    .ctrl{
+      width: 46px; height: 46px;
+      border-radius: 14px;
+      border: 1px solid var(--stroke);
+      background: rgba(255,255,255,0.04);
+      display:flex; align-items:center; justify-content:center;
+      font-size: 22px;
+      user-select:none;
+      cursor:pointer;
+    }
+    .subHint{
+      text-align:center;
+      color: var(--tg-hint);
+      font-size: 12.5px;
+      margin-top: 10px;
+    }
+
+    /* Bottom nav */
+    .bottomNav{
+      position: fixed;
+      left: 0; right: 0; bottom: 0;
+      padding: 10px 12px 18px;
+      background: linear-gradient(180deg, rgba(11,18,32,0), rgba(11,18,32,0.95) 40%, rgba(11,18,32,0.98));
+      backdrop-filter: blur(10px);
+    }
+    .navInner{
+      max-width: 420px;
+      margin: 0 auto;
+      border: 1px solid var(--stroke);
+      background: rgba(255,255,255,0.05);
+      border-radius: 18px;
+      padding: 10px 10px;
+      display:flex;
+      justify-content:space-around;
+      gap: 10px;
+    }
+    .navItem{
+      flex:1;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap:6px;
+      padding: 8px 6px;
+      border-radius: 14px;
+      color: var(--tg-hint);
+      font-size: 11.5px;
+      user-select:none;
+    }
+    .navItem.active{
+      background: rgba(46,166,255,0.10);
+      border: 1px solid rgba(46,166,255,0.28);
+      color: rgba(220,245,255,0.95);
+    }
+    .icon{
+      width: 22px; height: 22px;
+      border-radius: 7px;
+      border: 1px solid var(--stroke);
+      background: rgba(255,255,255,0.04);
+      display:flex; align-items:center; justify-content:center;
+      font-size: 13px;
+    }
+
+    a { color: inherit; }
+  </style>
 </head>
+
 <body>
-  <h1>Mini App работает</h1>
-  <button onclick="sendData()">Отправить в бот</button>
+  <div class="wrap">
+    <!-- Top bar -->
+    <div class="topbar">
+      <div class="left">
+        <div class="pill" id="btnBack" title="Назад">≡</div>
+        <div class="homeTitle">
+          <div class="name" id="homeName">My Home</div>
+          <div class="caret">▼</div>
+        </div>
+      </div>
+      <div class="right">
+        <div class="pill" id="btnPlus" title="Добавить">＋</div>
+      </div>
+    </div>
+
+    <!-- Section -->
+    <div class="sectionRow">
+      <div class="secLeft">
+        <div class="secDot"></div>
+        <div id="floorName">Main Floor</div>
+      </div>
+      <div class="more">More ›</div>
+    </div>
+
+    <!-- Thermostat card -->
+    <div class="card">
+      <div class="metaRow">
+        <div class="meta" title="Влажность">
+          💧 <span id="humidity">33%</span>
+        </div>
+        <div class="badge" id="statusBadge">
+          <span class="flame">🔥</span> <span id="statusText">Heating</span>
+        </div>
+      </div>
+
+      <div class="big">
+        <div class="temp" id="tempValue">69</div>
+        <div class="unit" id="tempUnit">°F</div>
+      </div>
+
+      <div class="setRow">
+        <div class="setBtn heat" id="heatSet">
+          <span class="dotHeat"></span>
+          <span>76</span>
+        </div>
+        <div class="setBtn cool" id="coolSet">
+          <span class="dotCool"></span>
+          <span>81</span>
+        </div>
+      </div>
+
+      <div class="controls">
+        <div class="ctrl" id="minus" title="-">−</div>
+        <div class="ctrl" id="send" title="Send">⇧</div>
+        <div class="ctrl" id="plus" title="+">＋</div>
+      </div>
+
+      <div class="subHint" id="hint">
+        Нажми ⇧ чтобы отправить текущую температуру боту
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom nav -->
+  <div class="bottomNav">
+    <div class="navInner">
+      <div class="navItem active" data-tab="home">
+        <div class="icon">⌂</div>
+        <div>Home</div>
+      </div>
+      <div class="navItem" data-tab="reports">
+        <div class="icon">≋</div>
+        <div>Reports</div>
+      </div>
+      <div class="navItem" data-tab="discover">
+        <div class="icon">◎</div>
+        <div>Discover</div>
+      </div>
+    </div>
+  </div>
 
   <script>
     const tg = window.Telegram?.WebApp;
 
+    // базовые значения как на скрине
+    let temp = 69;         // текущая
+    let heat = 76;         // setpoint heat
+    let cool = 81;         // setpoint cool
+    let humidity = 33;     // %
+
+    const elTemp = document.getElementById("tempValue");
+    const elHumidity = document.getElementById("humidity");
+    const elHeat = document.getElementById("heatSet").querySelector("span:last-child");
+    const elCool = document.getElementById("coolSet").querySelector("span:last-child");
+
+    function render(){
+      elTemp.textContent = String(temp);
+      elHumidity.textContent = humidity + "%";
+      elHeat.textContent = String(heat);
+      elCool.textContent = String(cool);
+    }
+
+    function sendToBot(){
+      if (!tg) return;
+      // отправим JSON, чтобы потом легко расширять (комнаты, режимы и т.д.)
+      const payload = {
+        type: "thermostat",
+        temp: temp,
+        heat: heat,
+        cool: cool,
+        humidity: humidity,
+        ts: Date.now()
+      };
+      tg.sendData(JSON.stringify(payload));
+      tg.showAlert("Отправлено боту: " + temp);
+    }
+
+    document.getElementById("minus").addEventListener("click", () => {
+      temp = temp - 1;
+      render();
+    });
+    document.getElementById("plus").addEventListener("click", () => {
+      temp = temp + 1;
+      render();
+    });
+    document.getElementById("send").addEventListener("click", sendToBot);
+
+    // клики по setpoint — редактирование
+    document.getElementById("heatSet").addEventListener("click", () => {
+      heat = heat + 1;
+      render();
+    });
+    document.getElementById("coolSet").addEventListener("click", () => {
+      cool = cool + 1;
+      render();
+    });
+
+    // нижняя навигация (пока просто переключение активного)
+    document.querySelectorAll(".navItem").forEach((item) => {
+      item.addEventListener("click", () => {
+        document.querySelectorAll(".navItem").forEach(n => n.classList.remove("active"));
+        item.classList.add("active");
+      });
+    });
+
+    // Telegram init
     if (tg) {
       tg.ready();
       tg.expand();
+
+      // можно включить красивую главную кнопку Telegram (по желанию)
+      // tg.MainButton.setText("Отправить");
+      // tg.MainButton.show();
+      // tg.MainButton.onClick(sendToBot);
     }
 
-    function sendData() {
-      if (tg) {
-        tg.sendData("Привет от Mini App");
-        tg.showAlert("Отправлено!");
-      }
-    }
+    render();
   </script>
 </body>
-
 </html>
