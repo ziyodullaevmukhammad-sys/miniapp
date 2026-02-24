@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Smarthouse</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
   <style>
     :root{
       --bg: #0b1220;
@@ -57,12 +58,6 @@
       flex: 0 0 auto;
       user-select:none;
     }
-    .homeTitle{
-      display:flex;
-      align-items:center;
-      gap:6px;
-      min-width:0;
-    }
     .homeTitle .name{
       font-weight: 650;
       letter-spacing: 0.2px;
@@ -71,11 +66,7 @@
       text-overflow: ellipsis;
       max-width: 220px;
     }
-    .topbar .right{
-      display:flex;
-      gap:10px;
-      align-items:center;
-    }
+    .topbar .right{ display:flex; gap:10px; align-items:center; }
 
     .sectionRow{
       display:flex;
@@ -85,10 +76,7 @@
       color: var(--tg-hint);
       font-size: 13px;
     }
-    .sectionRow .secLeft{
-      display:flex; align-items:center; gap:8px;
-      min-width:0;
-    }
+    .sectionRow .secLeft{ display:flex; align-items:center; gap:8px; }
     .secDot{
       width: 10px; height: 10px;
       border-radius: 3px;
@@ -96,11 +84,7 @@
       border: 1px solid var(--stroke);
       flex: 0 0 auto;
     }
-    .sectionRow .more{
-      color: var(--tg-hint);
-      opacity: .9;
-      user-select:none;
-    }
+    .sectionRow .more{ opacity:.9; user-select:none; }
 
     .card{
       border: 1px solid var(--stroke);
@@ -113,13 +97,11 @@
     .metaRow{
       display:flex;
       align-items:center;
-      justify-content:flex-start;
       gap:10px;
       color: var(--tg-hint);
       font-size: 13px;
       padding-bottom: 4px;
     }
-
     .badge{
       display:flex; align-items:center; gap:6px;
       padding: 6px 10px;
@@ -129,7 +111,6 @@
       color: rgba(255,210,185,0.95);
       font-weight: 600;
     }
-    .flame{ color: var(--heat); }
 
     .big{
       display:flex;
@@ -152,38 +133,38 @@
 
     .setRow{
       display:flex;
-      gap: 12px;
       justify-content:center;
       padding-top: 6px;
     }
 
     .setBtn{
-      min-width: 126px;
+      min-width: 160px;
       display:flex;
       align-items:center;
       justify-content:center;
-      gap:8px;
+      gap:10px;
       padding: 11px 12px;
       border-radius: 999px;
       background: rgba(255,255,255,0.02);
-      border: 1.5px solid var(--stroke);
-      color: var(--tg-text);
-      font-weight: 650;
-      user-select:none;
-      cursor:pointer;
-    }
-    .setBtn.center{
-      min-width: 160px;
-    }
-    .setBtn.heat{
-      border-color: rgba(255,122,24,0.55);
+      border: 1.5px solid rgba(255,122,24,0.55);
       color: rgba(255,210,185,0.98);
+      font-weight: 750;
+      user-select:none;
     }
-
     .dotHeat{
       width: 10px; height: 10px; border-radius: 4px;
       background: rgba(255,122,24,0.9);
       box-shadow: 0 0 12px rgba(255,122,24,0.35);
+    }
+    .savedInput{
+      width: 72px;
+      background: transparent;
+      border: 0;
+      outline: none;
+      color: inherit;
+      font: inherit;
+      font-weight: 800;
+      text-align: center;
     }
 
     .controls{
@@ -253,7 +234,7 @@
       font-size: 13px;
     }
 
-    /* Overlay (first start) */
+    /* First-start overlay */
     .overlay{
       position: fixed;
       inset: 0;
@@ -265,7 +246,6 @@
       z-index: 9999;
     }
     .overlay.show{ display:flex; }
-
     .modal{
       width: 100%;
       max-width: 420px;
@@ -275,22 +255,9 @@
       padding: 14px;
       box-shadow: 0 18px 60px rgba(0,0,0,0.45);
     }
-    .modalTitle{
-      font-size: 16px;
-      font-weight: 750;
-      margin-bottom: 8px;
-    }
-    .modalHint{
-      color: var(--tg-hint);
-      font-size: 13px;
-      margin-bottom: 12px;
-    }
-    .modalRow{
-      display:flex;
-      gap: 10px;
-      align-items:center;
-      justify-content:space-between;
-    }
+    .modalTitle{ font-size: 16px; font-weight: 800; margin-bottom: 8px; }
+    .modalHint{ color: var(--tg-hint); font-size: 13px; margin-bottom: 12px; }
+    .modalRow{ display:flex; gap:10px; align-items:center; }
     .modalInput{
       flex: 1;
       height: 44px;
@@ -309,7 +276,7 @@
       border: 1px solid rgba(255,122,24,0.45);
       background: rgba(255,122,24,0.18);
       color: rgba(255,230,210,0.98);
-      font-weight: 750;
+      font-weight: 800;
       cursor: pointer;
       user-select:none;
       white-space: nowrap;
@@ -319,132 +286,89 @@
 
 <body>
 
-  <!-- First start overlay -->
+  <!-- First start: user enters initial room temperature -->
   <div class="overlay" id="firstOverlay">
     <div class="modal">
       <div class="modalTitle">Xonaning haroratini kiriting</div>
-      <div class="modalHint">Masalan: 20 (°C). Keyin + / − bilan o‘zgartirasiz.</div>
+      <div class="modalHint">Masalan: 23 (°C). Keyin + / − bilan tanlaysiz, ⇧ bosib saqlaysiz.</div>
 
       <div class="modalRow">
-        <input class="modalInput" id="firstTempInput" type="number" inputmode="numeric" min="-50" max="60" step="1" placeholder="20" />
+        <input class="modalInput" id="firstTempInput" type="number" inputmode="numeric" min="-50" max="60" step="1" placeholder="23" />
         <div class="modalBtn" id="firstTempOk">Saqlash</div>
       </div>
     </div>
   </div>
 
   <div class="wrap">
-
     <div class="topbar">
       <div class="left">
         <div class="pill" id="btnBack" title="Menu">≡</div>
-        <div class="homeTitle">
-          <div class="name" id="homeName">My Home</div>
-        </div>
+        <div class="homeTitle"><div class="name">My Home</div></div>
       </div>
-      <div class="right">
-        <div class="pill" id="btnPlus" title="Add">＋</div>
-      </div>
+      <div class="right"><div class="pill" id="btnPlus" title="Add">＋</div></div>
     </div>
 
     <div class="sectionRow">
       <div class="secLeft">
         <div class="secDot"></div>
-        <div id="floorName">Asosiy xona</div>
+        <div>Asosiy xona</div>
       </div>
       <div class="more">More ›</div>
     </div>
 
     <div class="card">
       <div class="metaRow">
-        <div class="badge" id="statusBadge">
-          <span class="flame">🔥</span> <span id="statusText">Isitish</span>
-        </div>
+        <div class="badge"><span>🔥</span> <span>Isitish</span></div>
       </div>
 
-      <!-- Big temperature -->
+      <!-- BIG TEMP: this changes on +/- -->
       <div class="big">
-        <div class="temp" id="tempValue">20</div>
-        <div class="unit" id="tempUnit">°C</div>
+        <div class="temp" id="tempValue">23</div>
+        <div class="unit">°C</div>
       </div>
 
-      <!-- Orange input (same value as big temp) -->
+      <!-- ORANGE SQUARE VALUE: changes ONLY after ⇧ save -->
       <div class="setRow">
-        <div class="setBtn heat center" id="heatSet" style="gap:10px;">
+        <div class="setBtn" title="Saqlangan harorat">
           <span class="dotHeat"></span>
-          <input
-            id="targetInput"
-            type="number"
-            inputmode="numeric"
-            min="-50"
-            max="60"
-            step="1"
-            value="20"
-            style="
-              width: 72px;
-              background: transparent;
-              border: 0;
-              outline: none;
-              color: inherit;
-              font: inherit;
-              font-weight: 750;
-              text-align: center;
-            "
-          />
+          <input id="savedTempInput" class="savedInput" type="text" value="23" readonly />
         </div>
       </div>
 
-      <!-- Controls -->
       <div class="controls">
         <div class="ctrl" id="minus" title="-">−</div>
-        <div class="ctrl" id="send" title="Apply">⇧</div>
+        <div class="ctrl" id="send" title="Save">⇧</div>
         <div class="ctrl" id="plus" title="+">＋</div>
       </div>
 
-      <div class="subHint" id="hint">
-        Haroratni tanlang, so‘ng ⇧ tugmasini bosing
-      </div>
+      <div class="subHint">+ / − bilan tanlang, so‘ng ⇧ tugmasini bosing</div>
     </div>
   </div>
 
-  <!-- Bottom nav (visual only) -->
   <div class="bottomNav">
     <div class="navInner">
-      <div class="navItem active" data-tab="home">
-        <div class="icon">⌂</div>
-        <div>Temperatura</div>
-      </div>
-      <div class="navItem" data-tab="reports">
-        <div class="icon">≋</div>
-        <div>Ventilyator</div>
-      </div>
-      <div class="navItem" data-tab="discover">
-        <div class="icon">◎</div>
-        <div>Sozlamalar</div>
-      </div>
+      <div class="navItem active"><div class="icon">⌂</div><div>Temperatura</div></div>
+      <div class="navItem"><div class="icon">≋</div><div>Ventilyator</div></div>
+      <div class="navItem"><div class="icon">◎</div><div>Sozlamalar</div></div>
     </div>
   </div>
 
   <script>
     const tg = window.Telegram?.WebApp;
 
-    // ====== State ======
-    // "currentRoomTemp" — uyda hozirgi harorat (saqlanadi)
-    // "selectedTemp" — foydalanuvchi tanlayotgan harorat (input + big temp ko‘rsatadi)
     const STORAGE_KEY = "currentRoomTemp";
 
-    const elTemp = document.getElementById("tempValue");
-    const targetInput = document.getElementById("targetInput");
+    const elBig = document.getElementById("tempValue");
+    const elSaved = document.getElementById("savedTempInput");
 
     const overlay = document.getElementById("firstOverlay");
     const firstTempInput = document.getElementById("firstTempInput");
     const firstTempOk = document.getElementById("firstTempOk");
 
-    let currentRoomTemp = null;
-    let selectedTemp = 20;
+    let currentRoomTemp = null; // saqlangan (orange)
+    let selectedTemp = null;    // tanlanayotgan (big)
 
-    function clamp(v, min, max){
-      return Math.max(min, Math.min(max, v));
-    }
+    function clamp(v, min, max){ return Math.max(min, Math.min(max, v)); }
 
     function parseTemp(v){
       const n = parseInt(String(v ?? "").trim(), 10);
@@ -452,106 +376,81 @@
       return clamp(n, -50, 60);
     }
 
-    function syncUI(){
-      // Big temp + input always same
-      elTemp.textContent = String(selectedTemp);
-      targetInput.value = String(selectedTemp);
+    function showOverlay(){ overlay.classList.add("show"); setTimeout(()=>firstTempInput.focus(), 50); }
+    function hideOverlay(){ overlay.classList.remove("show"); }
+
+    function setBig(v){
+      selectedTemp = v;
+      elBig.textContent = String(v);
     }
 
-    function setSelectedTemp(v){
-      const t = parseTemp(v);
-      if (t === null) return;
-      selectedTemp = t;
-      syncUI();
-    }
-
-    function saveCurrentTemp(v){
+    function setSaved(v){
       currentRoomTemp = v;
+      elSaved.value = String(v);
+    }
+
+    function saveToStorage(v){
       localStorage.setItem(STORAGE_KEY, String(v));
     }
 
-    // ====== First start: ask room temp ======
-    function showFirstOverlay(){
-      overlay.classList.add("show");
-      firstTempInput.value = "";
-      setTimeout(() => firstTempInput.focus(), 50);
-    }
-
-    function hideFirstOverlay(){
-      overlay.classList.remove("show");
-    }
-
-    function initFromStorage(){
+    function loadFromStorage(){
       const saved = parseTemp(localStorage.getItem(STORAGE_KEY));
-      if (saved === null) {
-        showFirstOverlay();
+      if (saved === null){
+        showOverlay();
         return;
       }
-      currentRoomTemp = saved;
-      selectedTemp = saved;
-      syncUI();
+      setSaved(saved);  // orange shows saved
+      setBig(saved);    // big starts from saved
     }
 
+    // FIRST START: user enters initial room temp -> both become that value
     firstTempOk.addEventListener("click", () => {
       const t = parseTemp(firstTempInput.value);
-      if (t === null) {
-        alert("Iltimos, haroratni son bilan kiriting (masalan: 20).");
+      if (t === null){
+        alert("Iltimos, haroratni son bilan kiriting. Masalan: 23");
         return;
       }
-      saveCurrentTemp(t);
-      selectedTemp = t;
-      syncUI();
-      hideFirstOverlay();
+      setSaved(t);
+      setBig(t);
+      saveToStorage(t);
+      hideOverlay();
     });
 
-    // Enter bosilsa ham saqlansin
-    firstTempInput.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") firstTempOk.click();
-    });
+    firstTempInput.addEventListener("keydown", (e)=>{ if(e.key==="Enter") firstTempOk.click(); });
 
-    // ====== Manual input sync ======
-    targetInput.addEventListener("input", () => {
-      setSelectedTemp(targetInput.value);
-    });
-
-    // ====== +/- buttons ======
-    document.getElementById("minus").addEventListener("click", () => {
-      setSelectedTemp(selectedTemp - 1);
-    });
-
+    // +/- changes ONLY BIG temp
     document.getElementById("plus").addEventListener("click", () => {
-      setSelectedTemp(selectedTemp + 1);
+      setBig(clamp(selectedTemp + 1, -50, 60));
     });
 
-    // ====== Apply (⇧) ======
+    document.getElementById("minus").addEventListener("click", () => {
+      setBig(clamp(selectedTemp - 1, -50, 60));
+    });
+
+    // ⇧ save: show message, then update ORANGE value to match BIG value
     document.getElementById("send").addEventListener("click", () => {
-      // "Muvaffaqiyatli o‘zgardi" — va currentRoomTemp ham shu bo‘ldi
-      saveCurrentTemp(selectedTemp);
+      // saqlash
+      setSaved(selectedTemp);     // now orange changes
+      saveToStorage(selectedTemp);
 
-      if (tg) {
-        const payload = {
-          type: "set_home_temperature",
-          value: selectedTemp,
-          ts: Date.now()
-        };
+      // botga yuborish (xohlasang)
+      if (tg){
+        const payload = { type: "set_home_temperature", value: selectedTemp, ts: Date.now() };
         tg.sendData(JSON.stringify(payload));
-        tg.showAlert("Harorat muvaffaqiyatli o‘zgardi: " + selectedTemp + "°C");
+        tg.showAlert("Harorat muvaffaqiyatli saqlandi");
       } else {
-        alert("Harorat muvaffaqiyatli o‘zgardi: " + selectedTemp + "°C");
+        alert("Harorat muvaffaqiyatli saqlandi");
       }
-
-      // UI already synced, but keep consistent:
-      syncUI();
     });
 
-    // ====== Telegram init ======
-    if (tg) {
-      tg.ready();
-      tg.expand();
-    }
+    // Telegram init
+    if (tg){ tg.ready(); tg.expand(); }
 
-    // Start
-    initFromStorage();
+    // start
+    // default visual
+    setSaved(23);
+    setBig(23);
+    loadFromStorage();
   </script>
 </body>
 </html>
