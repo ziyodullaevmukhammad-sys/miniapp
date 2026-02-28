@@ -18,6 +18,9 @@
       --heat: #ff7a18;
       --cool: #2ea6ff;
 
+      --danger: #ff3b30;
+      --success: #34c759;
+
       --tg-bg: var(--tg-theme-bg-color, var(--bg));
       --tg-text: var(--tg-theme-text-color, var(--text));
       --tg-hint: var(--tg-theme-hint-color, var(--muted));
@@ -203,7 +206,21 @@
       font-size: 22px;
       user-select:none;
       cursor:pointer;
+      transition: border-color .15s ease, background .15s ease, color .15s ease;
     }
+
+    /* ⇧ tugma holatlari */
+    .ctrl.send.pending{
+      border-color: rgba(255,59,48,0.65);
+      background: rgba(255,59,48,0.16);
+      color: rgba(255,210,210,0.98);
+    }
+    .ctrl.send.sent{
+      border-color: rgba(52,199,89,0.65);
+      background: rgba(52,199,89,0.16);
+      color: rgba(220,255,230,0.98);
+    }
+
     .subHint{
       text-align:center;
       color: var(--tg-hint);
@@ -319,15 +336,15 @@
         </div>
 
         <div class="setRow">
-          <div class="setBtn heat center" id="heatSet">
+          <div class="setBtn heat center" id="heatSet" title="Setpoint">
             <span class="dotHeat"></span>
-            <span>76</span>
+            <span id="heatValue">76</span>
           </div>
         </div>
 
         <div class="controls">
           <div class="ctrl" id="minus" title="-">−</div>
-          <div class="ctrl" id="send" title="Send">⇧</div>
+          <div class="ctrl send" id="send" title="Send">⇧</div>
           <div class="ctrl" id="plus" title="+">＋</div>
         </div>
 
@@ -391,15 +408,32 @@
     const tg = window.Telegram?.WebApp;
 
     // HOME (thermostat)
-    let temp = 69;  // текущая
-    let heat = 76;  // setpoint
+    const MIN_HEAT = 0;
+    const MAX_HEAT = 100;
+
+    let temp = 69;  // tepada ko'rinadigan joriy harorat (o'zgarmaydi)
+    let heat = 76;  // o'rtadagi olov ichidagi setpoint (o'zgaradi)
 
     const elTemp = document.getElementById("tempValue");
-    const elHeat = document.getElementById("heatSet").querySelector("span:last-child");
+    const elHeat = document.getElementById("heatValue");
+    const btnSend = document.getElementById("send");
+
+    function clamp(n, min, max){ return Math.max(min, Math.min(max, n)); }
+
+    function setSendState(state){
+      // state: "idle" | "pending" | "sent"
+      btnSend.classList.remove("pending", "sent");
+      if(state === "pending") btnSend.classList.add("pending");
+      if(state === "sent") btnSend.classList.add("sent");
+    }
 
     function renderHome(){
       elTemp.textContent = String(temp);
       elHeat.textContent = String(heat);
+    }
+
+    function markPending(){
+      setSendState("pending"); // + / - bosilganda qizil bo'ladi
     }
 
     function sendThermostatToBot(){
@@ -411,22 +445,31 @@
         ts: Date.now()
       };
       tg.sendData(JSON.stringify(payload));
-      tg.showAlert("Отправлено боту: " + temp);
+      setSendState("sent"); // yuborilganda yashil bo'lib qoladi
+      tg.showAlert("Yuborildi. Set: " + heat);
     }
 
+    // +/- endi HEAT ni o'zgartiradi (olov ichidagi son)
     document.getElementById("minus").addEventListener("click", () => {
-      temp = temp - 1;
+      heat = clamp(heat - 1, MIN_HEAT, MAX_HEAT);
       renderHome();
+      markPending();
     });
-    document.getElementById("plus").addEventListener("click", () => {
-      temp = temp + 1;
-      renderHome();
-    });
-    document.getElementById("send").addEventListener("click", sendThermostatToBot);
 
-    document.getElementById("heatSet").addEventListener("click", () => {
-      heat = heat + 1;
+    document.getElementById("plus").addEventListener("click", () => {
+      heat = clamp(heat + 1, MIN_HEAT, MAX_HEAT);
       renderHome();
+      markPending();
+    });
+
+    // ⇧ yuborish
+    btnSend.addEventListener("click", sendThermostatToBot);
+
+    // Istasangiz: olov set tugmasini bossangiz ham +1 qilsin
+    document.getElementById("heatSet").addEventListener("click", () => {
+      heat = clamp(heat + 1, MIN_HEAT, MAX_HEAT);
+      renderHome();
+      markPending();
     });
 
     // REPORTS (AC control)
@@ -498,9 +541,10 @@
       tg.expand();
     }
 
+    // Boshlanish holati: hali yuborilmagan emas, shunchaki idle
+    setSendState("idle");
     renderHome();
     renderReports();
   </script>
 </body>
 </html>
-
