@@ -202,7 +202,7 @@
       font-size: 22px;
       user-select:none;
       cursor:pointer;
-      transition: border-color .15s ease, background .15s ease, color .15s ease;
+      transition: border-color .15s ease, background .15s ease, color .15s ease, opacity .15s ease;
     }
 
     .ctrl.send.pending{
@@ -288,7 +288,7 @@
       letter-spacing: -0.5px;
     }
 
-    /* Rows for Motor settings */
+    /* Rows for Motor/Settings blocks */
     .row2{
       display:flex;
       align-items:center;
@@ -337,6 +337,73 @@
       display:flex;align-items:center;justify-content:center;
       cursor:pointer; user-select:none;
       font-size:20px;
+    }
+
+    /* Settings: device input row */
+    .deviceBox{
+      margin-top: 10px;
+      border: 1px solid var(--stroke);
+      background: rgba(255,255,255,0.03);
+      border-radius: 14px;
+      padding: 10px;
+    }
+    .deviceTop{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .deviceTitle{
+      font-weight: 700;
+      font-size: 13px;
+    }
+    .deviceInputRow{
+      display:flex;
+      gap:10px;
+      margin-top: 10px;
+      align-items:center;
+    }
+    .deviceInput{
+      flex:1;
+      height: 42px;
+      border-radius: 12px;
+      border: 1px solid var(--stroke);
+      background: rgba(255,255,255,0.04);
+      color: var(--tg-text);
+      padding: 0 12px;
+      outline: none;
+      font-size: 14px;
+    }
+    .checkBtn{
+      width: 44px;
+      height: 42px;
+      border-radius: 12px;
+      border: 1px solid var(--stroke);
+      background: rgba(255,255,255,0.04);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      cursor:pointer;
+      user-select:none;
+      font-size: 18px;
+      transition: border-color .15s ease, background .15s ease, opacity .15s ease;
+      opacity: .6;
+      pointer-events: none;
+    }
+    .checkBtn.enabled{
+      opacity: 1;
+      pointer-events: auto;
+      border-color: rgba(52,199,89,0.55);
+      background: rgba(52,199,89,0.12);
+    }
+    .connectedLine{
+      margin-top: 10px;
+      font-size: 12.5px;
+      color: var(--tg-hint);
+    }
+    .connectedLine b{
+      color: rgba(245,250,255,0.92);
+      font-weight: 800;
     }
   </style>
 </head>
@@ -429,7 +496,6 @@
       <div class="card" style="margin-top:14px;">
         <div class="titleCenter" id="motorTitle">Motor</div>
 
-        <!-- Tok kuchi (motorga o'tdi) -->
         <div class="row2">
           <div class="lbl">
             <div class="t1" id="ampLbl">Tok kuchi</div>
@@ -442,7 +508,6 @@
           </div>
         </div>
 
-        <!-- Ko'mir surish -->
         <div class="row2">
           <div class="lbl">
             <div class="t1" id="coalFwdLbl">Ko‘mir surish</div>
@@ -455,7 +520,6 @@
           </div>
         </div>
 
-        <!-- Pause after coal feed -->
         <div class="row2">
           <div class="lbl">
             <div class="t1" id="coalPauseLbl">Ko‘mir surishdan keyin to‘xtash</div>
@@ -468,7 +532,6 @@
           </div>
         </div>
 
-        <!-- Orqaga aylantirish -->
         <div class="row2">
           <div class="lbl">
             <div class="t1" id="coalRevLbl">Orqaga aylantirish</div>
@@ -494,7 +557,24 @@
       <div class="card" style="margin-top:14px;">
         <div class="titleCenter" id="settingsTitle">Sozlamalar</div>
 
-        <div style="display:flex;flex-direction:column;gap:10px;">
+        <!-- Device add/connect UI -->
+        <div class="deviceBox">
+          <div class="deviceTop">
+            <div class="deviceTitle" id="addDeviceTitle">Qurilmani qo‘shish</div>
+          </div>
+
+          <div class="deviceInputRow">
+            <input class="deviceInput" id="deviceIdInput" placeholder="Qurilma ID sini kiriting" />
+            <div class="checkBtn" id="deviceConnectBtn" title="Connect">✓</div>
+          </div>
+
+          <div class="connectedLine" id="connectedLine" style="display:none;">
+            Ulangan qurilma: <b id="connectedId"></b>
+          </div>
+        </div>
+
+        <!-- Language -->
+        <div style="display:flex;flex-direction:column;gap:10px;margin-top:12px;">
           <div class="setBtn center" id="langBtn" title="Language">
             🌐 <span id="langBtnText">Til: O'zbek</span>
           </div>
@@ -536,6 +616,7 @@
     // ===== Storage =====
     const STORAGE_KEY = "smarthouse_state_v3";
     const LANG_KEY = "smarthouse_lang_v1";
+    const DEVICE_ID_KEY = "smarthouse_device_id_v1";
 
     function loadJson(key){
       try{
@@ -545,6 +626,11 @@
     }
     function saveJson(key, obj){
       try{ localStorage.setItem(key, JSON.stringify(obj)); }catch(e){}
+    }
+
+    function showOk(message){
+      if (tg && tg.showAlert) tg.showAlert(message);
+      else alert(message);
     }
 
     // ===== Language (UZ/RU) =====
@@ -579,6 +665,11 @@
         settingsHint: "Tilni almashtirish uchun tugmani bosing.",
         langBtnText: "Til: O'zbek",
 
+        addDeviceTitle: "Qurilmani qo‘shish",
+        devicePlaceholder: "Qurilma ID sini kiriting",
+        deviceConnected: "Ulangan qurilma",
+        deviceSuccess: "Qurilma muvaffaqiyatli ulandi",
+
         sentAlert: (heat) => "Yuborildi. Set: " + heat,
         sentOk: "Yuborildi."
       },
@@ -612,6 +703,11 @@
         settingsHint: "Нажмите кнопку, чтобы сменить язык.",
         langBtnText: "Язык: Русский",
 
+        addDeviceTitle: "Добавить устройство",
+        devicePlaceholder: "Введите ID устройства",
+        deviceConnected: "Подключено устройство",
+        deviceSuccess: "Устройство успешно подключено",
+
         sentAlert: (heat) => "Отправлено. Уставка: " + heat,
         sentOk: "Отправлено."
       }
@@ -624,6 +720,7 @@
     function setLang(lang){
       localStorage.setItem(LANG_KEY, lang);
       applyLang();
+      renderDevice();
     }
 
     function applyLang(){
@@ -662,6 +759,9 @@
       document.getElementById("settingsTitle").textContent = t.settingsTitle;
       document.getElementById("settingsHint").textContent = t.settingsHint;
       document.getElementById("langBtnText").textContent = t.langBtnText;
+
+      document.getElementById("addDeviceTitle").textContent = t.addDeviceTitle;
+      document.getElementById("deviceIdInput").placeholder = t.devicePlaceholder;
     }
 
     // ===== Common helpers =====
@@ -688,21 +788,15 @@
       elTemp.textContent = String(temp);
       elHeat.textContent = String(heat);
     }
-
     function markPendingHome(){
       setSendState(btnSendHome, "pending");
     }
-
     function sendThermostatToBot(){
       if (!tg) return;
-
-      const payload = { type: "thermostat", temp, heat, ts: Date.now() };
-      tg.sendData(JSON.stringify(payload));
-
+      tg.sendData(JSON.stringify({ type: "thermostat", temp, heat, device_id: getDeviceId(), ts: Date.now() }));
       setSendState(btnSendHome, "sent");
       persistAll();
-
-      tg.showAlert(i18n[getLang()].sentAlert(heat));
+      showOk(i18n[getLang()].sentAlert(heat));
     }
 
     document.getElementById("minus").addEventListener("click", () => {
@@ -738,22 +832,15 @@
       powerBtn.textContent = powerOn ? "ON" : "OFF";
       powerBtn.classList.toggle("off", !powerOn);
     }
-
     function markPendingFan(){
       setSendState(btnSendFan, "pending");
     }
-
     function sendFanToBot(){
       if (!tg) return;
-      tg.sendData(JSON.stringify({
-        type: "fan",
-        power: powerOn,
-        percent: percent,
-        ts: Date.now()
-      }));
+      tg.sendData(JSON.stringify({ type: "fan", power: powerOn, percent, device_id: getDeviceId(), ts: Date.now() }));
       setSendState(btnSendFan, "sent");
       persistAll();
-      tg.showAlert(i18n[getLang()].sentOk);
+      showOk(i18n[getLang()].sentOk);
     }
 
     powerBtn.addEventListener("click", () => {
@@ -777,7 +864,7 @@
     btnSendFan.addEventListener("click", sendFanToBot);
 
     // ===== MOTOR =====
-    const TIME_STEP = 5; // seconds
+    const TIME_STEP = 5;
     const TIME_MIN = 0;
     const TIME_MAX = 999;
 
@@ -785,10 +872,10 @@
     const AMP_MIN = 0.0;
     const AMP_MAX = 100.0;
 
-    let amp = 2.0;          // A (0.1 qadam)
-    let coalFwdSec = 10;    // qadam 5
-    let coalPauseSec = 5;   // qadam 5
-    let coalRevSec = 5;     // qadam 5
+    let amp = 2.0;
+    let coalFwdSec = 10;
+    let coalPauseSec = 5;
+    let coalRevSec = 5;
 
     const ampEl = document.getElementById("ampValue");
     const coalFwdEl = document.getElementById("coalFwdSec");
@@ -796,9 +883,7 @@
     const coalRevEl = document.getElementById("coalRevSec");
     const btnSendMotor = document.getElementById("sendMotor");
 
-    function round1(x){
-      return Math.round(x * 10) / 10;
-    }
+    function round1(x){ return Math.round(x * 10) / 10; }
 
     function renderMotor(){
       ampEl.textContent = amp.toFixed(1);
@@ -806,12 +891,10 @@
       coalPauseEl.textContent = String(coalPauseSec);
       coalRevEl.textContent = String(coalRevSec);
     }
-
     function markPendingMotor(){
       setSendState(btnSendMotor, "pending");
     }
 
-    // Amper +/- (0.1)
     document.getElementById("ampMinus").addEventListener("click", () => {
       amp = round1(clamp(amp - AMP_STEP, AMP_MIN, AMP_MAX));
       renderMotor(); markPendingMotor(); persistAll();
@@ -821,7 +904,6 @@
       renderMotor(); markPendingMotor(); persistAll();
     });
 
-    // Coal forward +/- (5 sec)
     document.getElementById("coalFwdMinus").addEventListener("click", () => {
       coalFwdSec = clamp(coalFwdSec - TIME_STEP, TIME_MIN, TIME_MAX);
       renderMotor(); markPendingMotor(); persistAll();
@@ -831,7 +913,6 @@
       renderMotor(); markPendingMotor(); persistAll();
     });
 
-    // Pause after forward +/- (5 sec)
     document.getElementById("coalPauseMinus").addEventListener("click", () => {
       coalPauseSec = clamp(coalPauseSec - TIME_STEP, TIME_MIN, TIME_MAX);
       renderMotor(); markPendingMotor(); persistAll();
@@ -841,7 +922,6 @@
       renderMotor(); markPendingMotor(); persistAll();
     });
 
-    // Reverse +/- (5 sec)
     document.getElementById("coalRevMinus").addEventListener("click", () => {
       coalRevSec = clamp(coalRevSec - TIME_STEP, TIME_MIN, TIME_MAX);
       renderMotor(); markPendingMotor(); persistAll();
@@ -855,15 +935,70 @@
       if(!tg) return;
       tg.sendData(JSON.stringify({
         type: "motor",
-        amp: amp,                 // tok kuchi
-        forward_sec: coalFwdSec,   // komir surish
-        pause_sec: coalPauseSec,   // toxtab turish
-        reverse_sec: coalRevSec,   // orqaga
+        amp,
+        forward_sec: coalFwdSec,
+        pause_sec: coalPauseSec,
+        reverse_sec: coalRevSec,
+        device_id: getDeviceId(),
         ts: Date.now()
       }));
       setSendState(btnSendMotor, "sent");
       persistAll();
-      tg.showAlert(i18n[getLang()].sentOk);
+      showOk(i18n[getLang()].sentOk);
+    });
+
+    // ===== Device connect (Settings) =====
+    const deviceInput = document.getElementById("deviceIdInput");
+    const deviceConnectBtn = document.getElementById("deviceConnectBtn");
+    const connectedLine = document.getElementById("connectedLine");
+    const connectedId = document.getElementById("connectedId");
+
+    function getDeviceId(){
+      return (localStorage.getItem(DEVICE_ID_KEY) || "").trim();
+    }
+    function setDeviceId(id){
+      localStorage.setItem(DEVICE_ID_KEY, (id || "").trim());
+    }
+
+    function renderDevice(){
+      const lang = getLang();
+      const t = i18n[lang];
+      const id = getDeviceId();
+
+      // connected line
+      if (id){
+        connectedLine.style.display = "block";
+        connectedLine.innerHTML = `${t.deviceConnected}: <b id="connectedId"></b>`;
+        document.getElementById("connectedId").textContent = id;
+      } else {
+        connectedLine.style.display = "none";
+        connectedId.textContent = "";
+      }
+
+      // input value if empty
+      if (!deviceInput.value.trim() && id) deviceInput.value = id;
+
+      // button enabled state
+      const hasText = deviceInput.value.trim().length > 0;
+      deviceConnectBtn.classList.toggle("enabled", hasText);
+    }
+
+    deviceInput.addEventListener("input", renderDevice);
+
+    deviceConnectBtn.addEventListener("click", () => {
+      const id = deviceInput.value.trim();
+      if (!id) return;
+
+      setDeviceId(id);
+      renderDevice();
+      persistAll();
+
+      // optional: botga ham yuboramiz (device bind)
+      if (tg){
+        tg.sendData(JSON.stringify({ type: "device_bind", device_id: id, ts: Date.now() }));
+      }
+
+      showOk(i18n[getLang()].deviceSuccess);
     });
 
     // ===== Persist all =====
@@ -872,6 +1007,7 @@
         temp, heat,
         powerOn, percent,
         motor: { amp, coalFwdSec, coalPauseSec, coalRevSec },
+        device_id: getDeviceId(),
         send: {
           home: btnSendHome.classList.contains("sent") ? "sent" : (btnSendHome.classList.contains("pending") ? "pending" : "idle"),
           fan: btnSendFan.classList.contains("sent") ? "sent" : (btnSendFan.classList.contains("pending") ? "pending" : "idle"),
@@ -933,6 +1069,11 @@
         setSendState(btnSendFan, "idle");
         setSendState(btnSendMotor, "idle");
       }
+
+      // device id
+      if (typeof saved.device_id === "string" && saved.device_id.trim()){
+        setDeviceId(saved.device_id.trim());
+      }
     } else {
       setSendState(btnSendHome, "idle");
       setSendState(btnSendFan, "idle");
@@ -949,6 +1090,7 @@
     renderHome();
     renderReports();
     renderMotor();
+    renderDevice();
     persistAll();
   </script>
 </body>
