@@ -60,6 +60,7 @@
       color: var(--tg-text);
       flex: 0 0 auto;
       user-select:none;
+      cursor:pointer;
     }
     .homeTitle{
       display:flex;
@@ -177,9 +178,7 @@
       user-select:none;
       cursor:pointer;
     }
-    .setBtn.center{
-      min-width: 160px;
-    }
+    .setBtn.center{ min-width: 160px; }
     .setBtn.heat{
       border-color: rgba(255,122,24,0.55);
       color: rgba(255,210,185,0.98);
@@ -235,7 +234,7 @@
       backdrop-filter: blur(10px);
     }
     .navInner{
-      max-width: 420px;
+      max-width: 520px;
       margin: 0 auto;
       border: 1px solid var(--stroke);
       background: rgba(255,255,255,0.05);
@@ -256,6 +255,7 @@
       color: var(--tg-hint);
       font-size: 11.5px;
       user-select:none;
+      cursor:pointer;
     }
     .navItem.active{
       background: rgba(46,166,255,0.10);
@@ -280,9 +280,6 @@
       font-weight:650;
       margin-bottom: 14px;
     }
-    .powerBtn{
-      min-width: 160px;
-    }
     .powerBtn.off{
       border-color: rgba(255,255,255,0.18) !important;
       background: rgba(255,255,255,0.04) !important;
@@ -292,6 +289,57 @@
       font-size:48px;
       font-weight:800;
       letter-spacing: -0.5px;
+    }
+
+    /* Rows for Motor/Amper */
+    .row2{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      padding: 10px 10px;
+      border: 1px solid var(--stroke);
+      background: rgba(255,255,255,0.03);
+      border-radius: 14px;
+      margin-top: 10px;
+    }
+    .row2 .lbl{
+      display:flex;
+      flex-direction:column;
+      gap:2px;
+      min-width:0;
+    }
+    .row2 .lbl .t1{
+      font-weight:650;
+      font-size:13px;
+      color: rgba(245,250,255,0.92);
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      max-width: 210px;
+    }
+    .row2 .lbl .t2{
+      font-size:12px;
+      color: var(--tg-hint);
+    }
+    .row2 .val{
+      font-weight:800;
+      font-size:18px;
+      white-space:nowrap;
+    }
+    .row2 .miniCtrls{
+      display:flex;
+      gap:8px;
+      align-items:center;
+      margin-left:auto;
+    }
+    .mini{
+      width:40px;height:40px;border-radius:12px;
+      border:1px solid var(--stroke);
+      background: rgba(255,255,255,0.04);
+      display:flex;align-items:center;justify-content:center;
+      cursor:pointer; user-select:none;
+      font-size:20px;
     }
   </style>
 </head>
@@ -343,7 +391,7 @@
 
         <div class="controls">
           <div class="ctrl" id="minus" title="-">−</div>
-          <div class="ctrl send" id="send" title="Send">⇧</div>
+          <div class="ctrl send" id="sendHome" title="Send">⇧</div>
           <div class="ctrl" id="plus" title="+">＋</div>
         </div>
 
@@ -353,7 +401,7 @@
       </div>
     </div>
 
-    <!-- REPORTS SCREEN -->
+    <!-- REPORTS SCREEN (FAN) -->
     <div class="screen" id="screenReports">
       <div class="card" style="margin-top:14px;">
         <div class="titleCenter" id="reportsTitle">Ventilyator tezligi</div>
@@ -372,6 +420,84 @@
 
           <div class="subHint" id="reportsHint">ON/OFF va 0–100% boshqaruv</div>
         </div>
+
+        <div class="controls" style="margin-top:14px;">
+          <div class="ctrl send" id="sendFan" title="Send">⇧</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MOTOR SCREEN -->
+    <div class="screen" id="screenMotor">
+      <div class="card" style="margin-top:14px;">
+        <div class="titleCenter" id="motorTitle">Motor</div>
+
+        <div class="row2">
+          <div class="lbl">
+            <div class="t1" id="coalFwdLbl">Ko‘mir surish</div>
+            <div class="t2" id="coalFwdHint">Vaqti (sekund), 0–999</div>
+          </div>
+          <div class="val"><span id="coalFwdSec">10</span>s</div>
+          <div class="miniCtrls">
+            <div class="mini" id="coalFwdMinus">−</div>
+            <div class="mini" id="coalFwdPlus">＋</div>
+          </div>
+        </div>
+
+        <div class="row2">
+          <div class="lbl">
+            <div class="t1" id="coalRevLbl">Orqaga aylantirish</div>
+            <div class="t2" id="coalRevHint">Vaqti (sekund), 0–999</div>
+          </div>
+          <div class="val"><span id="coalRevSec">5</span>s</div>
+          <div class="miniCtrls">
+            <div class="mini" id="coalRevMinus">−</div>
+            <div class="mini" id="coalRevPlus">＋</div>
+          </div>
+        </div>
+
+        <div class="controls" style="margin-top:14px;">
+          <div class="ctrl send" id="sendMotor" title="Send">⇧</div>
+        </div>
+
+        <div class="subHint" id="motorHint">Sozlangan vaqtlarni botga yuborish uchun ⇧ ni bosing</div>
+      </div>
+    </div>
+
+    <!-- AMPER SCREEN -->
+    <div class="screen" id="screenAmper">
+      <div class="card" style="margin-top:14px;">
+        <div class="titleCenter" id="amperTitle">Amper</div>
+
+        <div class="row2">
+          <div class="lbl">
+            <div class="t1" id="ampLbl">Tok kuchi</div>
+            <div class="t2" id="ampHint1">0–100 A</div>
+          </div>
+          <div class="val"><span id="ampValue">20</span>A</div>
+          <div class="miniCtrls">
+            <div class="mini" id="ampMinus">−</div>
+            <div class="mini" id="ampPlus">＋</div>
+          </div>
+        </div>
+
+        <div class="row2">
+          <div class="lbl">
+            <div class="t1" id="ampTimeLbl">Tok vaqti</div>
+            <div class="t2" id="ampHint2">Vaqti (sekund), 0–999</div>
+          </div>
+          <div class="val"><span id="ampSec">30</span>s</div>
+          <div class="miniCtrls">
+            <div class="mini" id="ampSecMinus">−</div>
+            <div class="mini" id="ampSecPlus">＋</div>
+          </div>
+        </div>
+
+        <div class="controls" style="margin-top:14px;">
+          <div class="ctrl send" id="sendAmper" title="Send">⇧</div>
+        </div>
+
+        <div class="subHint" id="amperHint">Sozlamalarni botga yuborish uchun ⇧ ni bosing</div>
       </div>
     </div>
 
@@ -405,6 +531,14 @@
         <div class="icon">≋</div>
         <div id="navReports">Ventilyator</div>
       </div>
+      <div class="navItem" data-tab="motor">
+        <div class="icon">⚙</div>
+        <div id="navMotor">Motor</div>
+      </div>
+      <div class="navItem" data-tab="amper">
+        <div class="icon">A</div>
+        <div id="navAmper">Amper</div>
+      </div>
       <div class="navItem" data-tab="discover">
         <div class="icon">◎</div>
         <div id="navSettings">Sozlamalar</div>
@@ -416,7 +550,7 @@
     const tg = window.Telegram?.WebApp;
 
     // ===== Storage =====
-    const STORAGE_KEY = "smarthouse_state_v1";
+    const STORAGE_KEY = "smarthouse_state_v2";
     const LANG_KEY = "smarthouse_lang_v1";
 
     function loadJson(key){
@@ -437,15 +571,36 @@
         more: "More ›",
         statusText: "Isitish",
         hint: "Joriy haroratni botga yuborish uchun ⇧ tugmasini bosing",
+
         nav_home: "Uy",
         nav_reports: "Ventilyator",
+        nav_motor: "Motor",
+        nav_amper: "Amper",
         nav_settings: "Sozlamalar",
+
         reportsTitle: "Ventilyator tezligi",
         reportsHint: "ON/OFF va 0–100% boshqaruv",
+
+        motorTitle: "Motor",
+        coalFwdLbl: "Ko‘mir surish",
+        coalFwdHint: "Vaqti (sekund), 0–999",
+        coalRevLbl: "Orqaga aylantirish",
+        coalRevHint: "Vaqti (sekund), 0–999",
+        motorHint: "Sozlangan vaqtlarni botga yuborish uchun ⇧ ni bosing",
+
+        amperTitle: "Amper",
+        ampLbl: "Tok kuchi",
+        ampHint1: "0–100 A",
+        ampTimeLbl: "Tok vaqti",
+        ampHint2: "Vaqti (sekund), 0–999",
+        amperHint: "Sozlamalarni botga yuborish uchun ⇧ ni bosing",
+
         settingsTitle: "Sozlamalar",
         settingsHint: "Tilni almashtirish uchun tugmani bosing.",
         langBtnText: "Til: O'zbek",
-        sentAlert: (heat) => "Yuborildi. Set: " + heat
+
+        sentAlert: (heat) => "Yuborildi. Set: " + heat,
+        sentOk: "Yuborildi."
       },
       ru: {
         homeName: "Мой дом",
@@ -453,15 +608,36 @@
         more: "Ещё ›",
         statusText: "Отопление",
         hint: "Чтобы отправить значение боту, нажмите ⇧",
+
         nav_home: "Дом",
         nav_reports: "Вентилятор",
+        nav_motor: "Мотор",
+        nav_amper: "Ампер",
         nav_settings: "Настройки",
+
         reportsTitle: "Скорость вентилятора",
         reportsHint: "ON/OFF и управление 0–100%",
+
+        motorTitle: "Мотор",
+        coalFwdLbl: "Подача угля",
+        coalFwdHint: "Время (сек), 0–999",
+        coalRevLbl: "Обратное вращение",
+        coalRevHint: "Время (сек), 0–999",
+        motorHint: "Нажмите ⇧ чтобы отправить настройки",
+
+        amperTitle: "Ампер",
+        ampLbl: "Сила тока",
+        ampHint1: "0–100 A",
+        ampTimeLbl: "Время тока",
+        ampHint2: "Время (сек), 0–999",
+        amperHint: "Нажмите ⇧ чтобы отправить настройки",
+
         settingsTitle: "Настройки",
         settingsHint: "Нажмите кнопку, чтобы сменить язык.",
         langBtnText: "Язык: Русский",
-        sentAlert: (heat) => "Отправлено. Уставка: " + heat
+
+        sentAlert: (heat) => "Отправлено. Уставка: " + heat,
+        sentOk: "Отправлено."
       }
     };
 
@@ -486,67 +662,69 @@
 
       document.getElementById("navHome").textContent = t.nav_home;
       document.getElementById("navReports").textContent = t.nav_reports;
+      document.getElementById("navMotor").textContent = t.nav_motor;
+      document.getElementById("navAmper").textContent = t.nav_amper;
       document.getElementById("navSettings").textContent = t.nav_settings;
 
       document.getElementById("reportsTitle").textContent = t.reportsTitle;
       document.getElementById("reportsHint").textContent = t.reportsHint;
+
+      document.getElementById("motorTitle").textContent = t.motorTitle;
+      document.getElementById("coalFwdLbl").textContent = t.coalFwdLbl;
+      document.getElementById("coalFwdHint").textContent = t.coalFwdHint;
+      document.getElementById("coalRevLbl").textContent = t.coalRevLbl;
+      document.getElementById("coalRevHint").textContent = t.coalRevHint;
+      document.getElementById("motorHint").textContent = t.motorHint;
+
+      document.getElementById("amperTitle").textContent = t.amperTitle;
+      document.getElementById("ampLbl").textContent = t.ampLbl;
+      document.getElementById("ampHint1").textContent = t.ampHint1;
+      document.getElementById("ampTimeLbl").textContent = t.ampTimeLbl;
+      document.getElementById("ampHint2").textContent = t.ampHint2;
+      document.getElementById("amperHint").textContent = t.amperHint;
 
       document.getElementById("settingsTitle").textContent = t.settingsTitle;
       document.getElementById("settingsHint").textContent = t.settingsHint;
       document.getElementById("langBtnText").textContent = t.langBtnText;
     }
 
+    // ===== Common helpers =====
+    function clamp(n, min, max){ return Math.max(min, Math.min(max, n)); }
+
+    function setSendState(btn, state){
+      btn.classList.remove("pending", "sent");
+      if(state === "pending") btn.classList.add("pending");
+      if(state === "sent") btn.classList.add("sent");
+    }
+
     // ===== HOME (thermostat) =====
     const MIN_HEAT = 0;
     const MAX_HEAT = 100;
 
-    let temp = 69;   // tepada ko'rinadigan joriy harorat (hozircha o'zgarmaydi)
-    let heat = 76;   // olov ichidagi setpoint (o'zgaradi)
+    let temp = 69;
+    let heat = 76;
 
     const elTemp = document.getElementById("tempValue");
     const elHeat = document.getElementById("heatValue");
-    const btnSend = document.getElementById("send");
-
-    function clamp(n, min, max){ return Math.max(min, Math.min(max, n)); }
-
-    function setSendState(state){
-      // state: "idle" | "pending" | "sent"
-      btnSend.classList.remove("pending", "sent");
-      if(state === "pending") btnSend.classList.add("pending");
-      if(state === "sent") btnSend.classList.add("sent");
-    }
+    const btnSendHome = document.getElementById("sendHome");
 
     function renderHome(){
       elTemp.textContent = String(temp);
       elHeat.textContent = String(heat);
     }
 
-    function persist(){
-      saveJson(STORAGE_KEY, {
-        temp, heat, powerOn, percent,
-        sendState: btnSend.classList.contains("sent") ? "sent" :
-                  btnSend.classList.contains("pending") ? "pending" : "idle",
-        ts: Date.now()
-      });
-    }
-
-    function markPending(){
-      setSendState("pending"); // + / - bosilganda qizil
+    function markPendingHome(){
+      setSendState(btnSendHome, "pending");
     }
 
     function sendThermostatToBot(){
       if (!tg) return;
 
-      const payload = {
-        type: "thermostat",
-        temp: temp,
-        heat: heat,
-        ts: Date.now()
-      };
-
+      const payload = { type: "thermostat", temp, heat, ts: Date.now() };
       tg.sendData(JSON.stringify(payload));
-      setSendState("sent"); // yuborilganda yashil
-      persist();
+
+      setSendState(btnSendHome, "sent");
+      persistAll();
 
       const lang = getLang();
       tg.showAlert(i18n[lang].sentAlert(heat));
@@ -555,24 +733,21 @@
     document.getElementById("minus").addEventListener("click", () => {
       heat = clamp(heat - 1, MIN_HEAT, MAX_HEAT);
       renderHome();
-      markPending();
-      persist();
+      markPendingHome();
+      persistAll();
     });
-
     document.getElementById("plus").addEventListener("click", () => {
       heat = clamp(heat + 1, MIN_HEAT, MAX_HEAT);
       renderHome();
-      markPending();
-      persist();
+      markPendingHome();
+      persistAll();
     });
-
-    btnSend.addEventListener("click", sendThermostatToBot);
-
+    btnSendHome.addEventListener("click", sendThermostatToBot);
     document.getElementById("heatSet").addEventListener("click", () => {
       heat = clamp(heat + 1, MIN_HEAT, MAX_HEAT);
       renderHome();
-      markPending();
-      persist();
+      markPendingHome();
+      persistAll();
     });
 
     // ===== REPORTS (fan control) =====
@@ -580,45 +755,156 @@
     let percent = 50;
 
     const powerBtn = document.getElementById("powerBtn");
-    const percentValue = document.getElementById("percentValue");
+    const percentEl = document.getElementById("percentValue");
+    const btnSendFan = document.getElementById("sendFan");
 
     function renderReports(){
-      percentValue.textContent = percent + "%";
+      percentEl.textContent = percent + "%";
       powerBtn.textContent = powerOn ? "ON" : "OFF";
       powerBtn.classList.toggle("off", !powerOn);
     }
 
-    function sendACToBot(){
+    function markPendingFan(){
+      setSendState(btnSendFan, "pending");
+    }
+
+    function sendFanToBot(){
       if (!tg) return;
-      const payload = {
-        type: "ac_control",
+      tg.sendData(JSON.stringify({
+        type: "fan",
         power: powerOn,
         percent: percent,
         ts: Date.now()
-      };
-      tg.sendData(JSON.stringify(payload));
+      }));
+      setSendState(btnSendFan, "sent");
+      persistAll();
+      tg.showAlert(i18n[getLang()].sentOk);
     }
 
     powerBtn.addEventListener("click", () => {
       powerOn = !powerOn;
       renderReports();
-      sendACToBot();
-      persist();
+      markPendingFan();
+      persistAll();
     });
-
     document.getElementById("percentMinus").addEventListener("click", () => {
       percent = Math.max(0, percent - 5);
       renderReports();
-      sendACToBot();
-      persist();
+      markPendingFan();
+      persistAll();
     });
-
     document.getElementById("percentPlus").addEventListener("click", () => {
       percent = Math.min(100, percent + 5);
       renderReports();
-      sendACToBot();
-      persist();
+      markPendingFan();
+      persistAll();
     });
+    btnSendFan.addEventListener("click", sendFanToBot);
+
+    // ===== MOTOR =====
+    let coalFwdSec = 10;
+    let coalRevSec = 5;
+
+    const coalFwdEl = document.getElementById("coalFwdSec");
+    const coalRevEl = document.getElementById("coalRevSec");
+    const btnSendMotor = document.getElementById("sendMotor");
+
+    function renderMotor(){
+      coalFwdEl.textContent = String(coalFwdSec);
+      coalRevEl.textContent = String(coalRevSec);
+    }
+    function markPendingMotor(){ setSendState(btnSendMotor, "pending"); }
+
+    document.getElementById("coalFwdMinus").addEventListener("click", () => {
+      coalFwdSec = clamp(coalFwdSec - 1, 0, 999);
+      renderMotor(); markPendingMotor(); persistAll();
+    });
+    document.getElementById("coalFwdPlus").addEventListener("click", () => {
+      coalFwdSec = clamp(coalFwdSec + 1, 0, 999);
+      renderMotor(); markPendingMotor(); persistAll();
+    });
+    document.getElementById("coalRevMinus").addEventListener("click", () => {
+      coalRevSec = clamp(coalRevSec - 1, 0, 999);
+      renderMotor(); markPendingMotor(); persistAll();
+    });
+    document.getElementById("coalRevPlus").addEventListener("click", () => {
+      coalRevSec = clamp(coalRevSec + 1, 0, 999);
+      renderMotor(); markPendingMotor(); persistAll();
+    });
+
+    btnSendMotor.addEventListener("click", () => {
+      if(!tg) return;
+      tg.sendData(JSON.stringify({
+        type: "motor",
+        forward_sec: coalFwdSec,
+        reverse_sec: coalRevSec,
+        ts: Date.now()
+      }));
+      setSendState(btnSendMotor, "sent");
+      persistAll();
+      tg.showAlert(i18n[getLang()].sentOk);
+    });
+
+    // ===== AMPER =====
+    let ampValue = 20; // A
+    let ampSec = 30;   // s
+
+    const ampEl = document.getElementById("ampValue");
+    const ampSecEl = document.getElementById("ampSec");
+    const btnSendAmper = document.getElementById("sendAmper");
+
+    function renderAmper(){
+      ampEl.textContent = String(ampValue);
+      ampSecEl.textContent = String(ampSec);
+    }
+    function markPendingAmper(){ setSendState(btnSendAmper, "pending"); }
+
+    document.getElementById("ampMinus").addEventListener("click", () => {
+      ampValue = clamp(ampValue - 1, 0, 100);
+      renderAmper(); markPendingAmper(); persistAll();
+    });
+    document.getElementById("ampPlus").addEventListener("click", () => {
+      ampValue = clamp(ampValue + 1, 0, 100);
+      renderAmper(); markPendingAmper(); persistAll();
+    });
+    document.getElementById("ampSecMinus").addEventListener("click", () => {
+      ampSec = clamp(ampSec - 1, 0, 999);
+      renderAmper(); markPendingAmper(); persistAll();
+    });
+    document.getElementById("ampSecPlus").addEventListener("click", () => {
+      ampSec = clamp(ampSec + 1, 0, 999);
+      renderAmper(); markPendingAmper(); persistAll();
+    });
+
+    btnSendAmper.addEventListener("click", () => {
+      if(!tg) return;
+      tg.sendData(JSON.stringify({
+        type: "amper",
+        amp: ampValue,
+        sec: ampSec,
+        ts: Date.now()
+      }));
+      setSendState(btnSendAmper, "sent");
+      persistAll();
+      tg.showAlert(i18n[getLang()].sentOk);
+    });
+
+    // ===== Persist all =====
+    function persistAll(){
+      saveJson(STORAGE_KEY, {
+        temp, heat,
+        powerOn, percent,
+        coalFwdSec, coalRevSec,
+        ampValue, ampSec,
+        send: {
+          home: btnSendHome.classList.contains("sent") ? "sent" : (btnSendHome.classList.contains("pending") ? "pending" : "idle"),
+          fan: btnSendFan.classList.contains("sent") ? "sent" : (btnSendFan.classList.contains("pending") ? "pending" : "idle"),
+          motor: btnSendMotor.classList.contains("sent") ? "sent" : (btnSendMotor.classList.contains("pending") ? "pending" : "idle"),
+          amper: btnSendAmper.classList.contains("sent") ? "sent" : (btnSendAmper.classList.contains("pending") ? "pending" : "idle")
+        },
+        ts: Date.now()
+      });
+    }
 
     // ===== SETTINGS (language button) =====
     document.getElementById("langBtn").addEventListener("click", () => {
@@ -630,6 +916,8 @@
     const screens = {
       home: document.getElementById("screenHome"),
       reports: document.getElementById("screenReports"),
+      motor: document.getElementById("screenMotor"),
+      amper: document.getElementById("screenAmper"),
       discover: document.getElementById("screenDiscover"),
     };
 
@@ -651,11 +939,32 @@
     if(saved){
       if(typeof saved.temp === "number") temp = saved.temp;
       if(typeof saved.heat === "number") heat = saved.heat;
+
       if(typeof saved.powerOn === "boolean") powerOn = saved.powerOn;
       if(typeof saved.percent === "number") percent = saved.percent;
-      if(saved.sendState) setSendState(saved.sendState);
+
+      if(typeof saved.coalFwdSec === "number") coalFwdSec = saved.coalFwdSec;
+      if(typeof saved.coalRevSec === "number") coalRevSec = saved.coalRevSec;
+
+      if(typeof saved.ampValue === "number") ampValue = saved.ampValue;
+      if(typeof saved.ampSec === "number") ampSec = saved.ampSec;
+
+      if(saved.send){
+        setSendState(btnSendHome, saved.send.home || "idle");
+        setSendState(btnSendFan, saved.send.fan || "idle");
+        setSendState(btnSendMotor, saved.send.motor || "idle");
+        setSendState(btnSendAmper, saved.send.amper || "idle");
+      } else {
+        setSendState(btnSendHome, "idle");
+        setSendState(btnSendFan, "idle");
+        setSendState(btnSendMotor, "idle");
+        setSendState(btnSendAmper, "idle");
+      }
     } else {
-      setSendState("idle");
+      setSendState(btnSendHome, "idle");
+      setSendState(btnSendFan, "idle");
+      setSendState(btnSendMotor, "idle");
+      setSendState(btnSendAmper, "idle");
     }
 
     applyLang();
@@ -667,7 +976,9 @@
 
     renderHome();
     renderReports();
-    persist();
+    renderMotor();
+    renderAmper();
+    persistAll();
   </script>
 </body>
 </html>
