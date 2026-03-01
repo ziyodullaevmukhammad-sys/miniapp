@@ -15,8 +15,6 @@
       --muted: rgba(245,250,255,0.60);
 
       --heat: #ff7a18;
-      --cool: #2ea6ff;
-
       --danger: #ff3b30;
       --success: #34c759;
 
@@ -207,7 +205,6 @@
       transition: border-color .15s ease, background .15s ease, color .15s ease;
     }
 
-    /* ⇧ tugma holatlari */
     .ctrl.send.pending{
       border-color: rgba(255,59,48,0.65);
       background: rgba(255,59,48,0.16);
@@ -271,9 +268,9 @@
       font-size: 13px;
     }
 
-    /* Screens */
     .screen { display:none; }
     .screen.active { display:block; }
+
     .titleCenter{
       text-align:center;
       font-size:20px;
@@ -291,7 +288,7 @@
       letter-spacing: -0.5px;
     }
 
-    /* Rows for Motor/Amper */
+    /* Rows for Motor settings */
     .row2{
       display:flex;
       align-items:center;
@@ -316,7 +313,7 @@
       white-space:nowrap;
       overflow:hidden;
       text-overflow:ellipsis;
-      max-width: 210px;
+      max-width: 190px;
     }
     .row2 .lbl .t2{
       font-size:12px;
@@ -432,10 +429,24 @@
       <div class="card" style="margin-top:14px;">
         <div class="titleCenter" id="motorTitle">Motor</div>
 
+        <!-- Tok kuchi (motorga o'tdi) -->
+        <div class="row2">
+          <div class="lbl">
+            <div class="t1" id="ampLbl">Tok kuchi</div>
+            <div class="t2" id="ampHint">0.0–100.0 A (qadam 0.1)</div>
+          </div>
+          <div class="val"><span id="ampValue">2.0</span>A</div>
+          <div class="miniCtrls">
+            <div class="mini" id="ampMinus">−</div>
+            <div class="mini" id="ampPlus">＋</div>
+          </div>
+        </div>
+
+        <!-- Ko'mir surish -->
         <div class="row2">
           <div class="lbl">
             <div class="t1" id="coalFwdLbl">Ko‘mir surish</div>
-            <div class="t2" id="coalFwdHint">Vaqti (sekund), 0–999</div>
+            <div class="t2" id="coalFwdHint">Vaqti (sekund), 0–999 (qadam 5)</div>
           </div>
           <div class="val"><span id="coalFwdSec">10</span>s</div>
           <div class="miniCtrls">
@@ -444,10 +455,24 @@
           </div>
         </div>
 
+        <!-- Pause after coal feed -->
+        <div class="row2">
+          <div class="lbl">
+            <div class="t1" id="coalPauseLbl">Ko‘mir surishdan keyin to‘xtash</div>
+            <div class="t2" id="coalPauseHint">Vaqti (sekund), 0–999 (qadam 5)</div>
+          </div>
+          <div class="val"><span id="coalPauseSec">5</span>s</div>
+          <div class="miniCtrls">
+            <div class="mini" id="coalPauseMinus">−</div>
+            <div class="mini" id="coalPausePlus">＋</div>
+          </div>
+        </div>
+
+        <!-- Orqaga aylantirish -->
         <div class="row2">
           <div class="lbl">
             <div class="t1" id="coalRevLbl">Orqaga aylantirish</div>
-            <div class="t2" id="coalRevHint">Vaqti (sekund), 0–999</div>
+            <div class="t2" id="coalRevHint">Vaqti (sekund), 0–999 (qadam 5)</div>
           </div>
           <div class="val"><span id="coalRevSec">5</span>s</div>
           <div class="miniCtrls">
@@ -460,44 +485,7 @@
           <div class="ctrl send" id="sendMotor" title="Send">⇧</div>
         </div>
 
-        <div class="subHint" id="motorHint">Sozlangan vaqtlarni botga yuborish uchun ⇧ ni bosing</div>
-      </div>
-    </div>
-
-    <!-- AMPER SCREEN -->
-    <div class="screen" id="screenAmper">
-      <div class="card" style="margin-top:14px;">
-        <div class="titleCenter" id="amperTitle">Amper</div>
-
-        <div class="row2">
-          <div class="lbl">
-            <div class="t1" id="ampLbl">Tok kuchi</div>
-            <div class="t2" id="ampHint1">0–100 A</div>
-          </div>
-          <div class="val"><span id="ampValue">20</span>A</div>
-          <div class="miniCtrls">
-            <div class="mini" id="ampMinus">−</div>
-            <div class="mini" id="ampPlus">＋</div>
-          </div>
-        </div>
-
-        <div class="row2">
-          <div class="lbl">
-            <div class="t1" id="ampTimeLbl">Tok vaqti</div>
-            <div class="t2" id="ampHint2">Vaqti (sekund), 0–999</div>
-          </div>
-          <div class="val"><span id="ampSec">30</span>s</div>
-          <div class="miniCtrls">
-            <div class="mini" id="ampSecMinus">−</div>
-            <div class="mini" id="ampSecPlus">＋</div>
-          </div>
-        </div>
-
-        <div class="controls" style="margin-top:14px;">
-          <div class="ctrl send" id="sendAmper" title="Send">⇧</div>
-        </div>
-
-        <div class="subHint" id="amperHint">Sozlamalarni botga yuborish uchun ⇧ ni bosing</div>
+        <div class="subHint" id="motorHint">Sozlamalarni botga yuborish uchun ⇧ ni bosing</div>
       </div>
     </div>
 
@@ -535,10 +523,6 @@
         <div class="icon">⚙</div>
         <div id="navMotor">Motor</div>
       </div>
-      <div class="navItem" data-tab="amper">
-        <div class="icon">A</div>
-        <div id="navAmper">Amper</div>
-      </div>
       <div class="navItem" data-tab="discover">
         <div class="icon">◎</div>
         <div id="navSettings">Sozlamalar</div>
@@ -550,7 +534,7 @@
     const tg = window.Telegram?.WebApp;
 
     // ===== Storage =====
-    const STORAGE_KEY = "smarthouse_state_v2";
+    const STORAGE_KEY = "smarthouse_state_v3";
     const LANG_KEY = "smarthouse_lang_v1";
 
     function loadJson(key){
@@ -575,25 +559,21 @@
         nav_home: "Uy",
         nav_reports: "Ventilyator",
         nav_motor: "Motor",
-        nav_amper: "Amper",
         nav_settings: "Sozlamalar",
 
         reportsTitle: "Ventilyator tezligi",
         reportsHint: "ON/OFF va 0–100% boshqaruv",
 
         motorTitle: "Motor",
-        coalFwdLbl: "Ko‘mir surish",
-        coalFwdHint: "Vaqti (sekund), 0–999",
-        coalRevLbl: "Orqaga aylantirish",
-        coalRevHint: "Vaqti (sekund), 0–999",
-        motorHint: "Sozlangan vaqtlarni botga yuborish uchun ⇧ ni bosing",
-
-        amperTitle: "Amper",
         ampLbl: "Tok kuchi",
-        ampHint1: "0–100 A",
-        ampTimeLbl: "Tok vaqti",
-        ampHint2: "Vaqti (sekund), 0–999",
-        amperHint: "Sozlamalarni botga yuborish uchun ⇧ ni bosing",
+        ampHint: "0.0–100.0 A (qadam 0.1)",
+        coalFwdLbl: "Ko‘mir surish",
+        coalFwdHint: "Vaqti (sekund), 0–999 (qadam 5)",
+        coalPauseLbl: "Ko‘mir surishdan keyin to‘xtash",
+        coalPauseHint: "Vaqti (sekund), 0–999 (qadam 5)",
+        coalRevLbl: "Orqaga aylantirish",
+        coalRevHint: "Vaqti (sekund), 0–999 (qadam 5)",
+        motorHint: "Sozlamalarni botga yuborish uchun ⇧ ni bosing",
 
         settingsTitle: "Sozlamalar",
         settingsHint: "Tilni almashtirish uchun tugmani bosing.",
@@ -612,25 +592,21 @@
         nav_home: "Дом",
         nav_reports: "Вентилятор",
         nav_motor: "Мотор",
-        nav_amper: "Ампер",
         nav_settings: "Настройки",
 
         reportsTitle: "Скорость вентилятора",
         reportsHint: "ON/OFF и управление 0–100%",
 
         motorTitle: "Мотор",
-        coalFwdLbl: "Подача угля",
-        coalFwdHint: "Время (сек), 0–999",
-        coalRevLbl: "Обратное вращение",
-        coalRevHint: "Время (сек), 0–999",
-        motorHint: "Нажмите ⇧ чтобы отправить настройки",
-
-        amperTitle: "Ампер",
         ampLbl: "Сила тока",
-        ampHint1: "0–100 A",
-        ampTimeLbl: "Время тока",
-        ampHint2: "Время (сек), 0–999",
-        amperHint: "Нажмите ⇧ чтобы отправить настройки",
+        ampHint: "0.0–100.0 A (шаг 0.1)",
+        coalFwdLbl: "Подача угля",
+        coalFwdHint: "Время (сек), 0–999 (шаг 5)",
+        coalPauseLbl: "Пауза после подачи",
+        coalPauseHint: "Время (сек), 0–999 (шаг 5)",
+        coalRevLbl: "Обратное вращение",
+        coalRevHint: "Время (сек), 0–999 (шаг 5)",
+        motorHint: "Нажмите ⇧ чтобы отправить настройки",
 
         settingsTitle: "Настройки",
         settingsHint: "Нажмите кнопку, чтобы сменить язык.",
@@ -663,25 +639,25 @@
       document.getElementById("navHome").textContent = t.nav_home;
       document.getElementById("navReports").textContent = t.nav_reports;
       document.getElementById("navMotor").textContent = t.nav_motor;
-      document.getElementById("navAmper").textContent = t.nav_amper;
       document.getElementById("navSettings").textContent = t.nav_settings;
 
       document.getElementById("reportsTitle").textContent = t.reportsTitle;
       document.getElementById("reportsHint").textContent = t.reportsHint;
 
       document.getElementById("motorTitle").textContent = t.motorTitle;
+      document.getElementById("ampLbl").textContent = t.ampLbl;
+      document.getElementById("ampHint").textContent = t.ampHint;
+
       document.getElementById("coalFwdLbl").textContent = t.coalFwdLbl;
       document.getElementById("coalFwdHint").textContent = t.coalFwdHint;
+
+      document.getElementById("coalPauseLbl").textContent = t.coalPauseLbl;
+      document.getElementById("coalPauseHint").textContent = t.coalPauseHint;
+
       document.getElementById("coalRevLbl").textContent = t.coalRevLbl;
       document.getElementById("coalRevHint").textContent = t.coalRevHint;
-      document.getElementById("motorHint").textContent = t.motorHint;
 
-      document.getElementById("amperTitle").textContent = t.amperTitle;
-      document.getElementById("ampLbl").textContent = t.ampLbl;
-      document.getElementById("ampHint1").textContent = t.ampHint1;
-      document.getElementById("ampTimeLbl").textContent = t.ampTimeLbl;
-      document.getElementById("ampHint2").textContent = t.ampHint2;
-      document.getElementById("amperHint").textContent = t.amperHint;
+      document.getElementById("motorHint").textContent = t.motorHint;
 
       document.getElementById("settingsTitle").textContent = t.settingsTitle;
       document.getElementById("settingsHint").textContent = t.settingsHint;
@@ -726,8 +702,7 @@
       setSendState(btnSendHome, "sent");
       persistAll();
 
-      const lang = getLang();
-      tg.showAlert(i18n[lang].sentAlert(heat));
+      tg.showAlert(i18n[getLang()].sentAlert(heat));
     }
 
     document.getElementById("minus").addEventListener("click", () => {
@@ -802,33 +777,77 @@
     btnSendFan.addEventListener("click", sendFanToBot);
 
     // ===== MOTOR =====
-    let coalFwdSec = 10;
-    let coalRevSec = 5;
+    const TIME_STEP = 5; // seconds
+    const TIME_MIN = 0;
+    const TIME_MAX = 999;
 
+    const AMP_STEP = 0.1;
+    const AMP_MIN = 0.0;
+    const AMP_MAX = 100.0;
+
+    let amp = 2.0;          // A (0.1 qadam)
+    let coalFwdSec = 10;    // qadam 5
+    let coalPauseSec = 5;   // qadam 5
+    let coalRevSec = 5;     // qadam 5
+
+    const ampEl = document.getElementById("ampValue");
     const coalFwdEl = document.getElementById("coalFwdSec");
+    const coalPauseEl = document.getElementById("coalPauseSec");
     const coalRevEl = document.getElementById("coalRevSec");
     const btnSendMotor = document.getElementById("sendMotor");
 
+    function round1(x){
+      return Math.round(x * 10) / 10;
+    }
+
     function renderMotor(){
+      ampEl.textContent = amp.toFixed(1);
       coalFwdEl.textContent = String(coalFwdSec);
+      coalPauseEl.textContent = String(coalPauseSec);
       coalRevEl.textContent = String(coalRevSec);
     }
-    function markPendingMotor(){ setSendState(btnSendMotor, "pending"); }
 
+    function markPendingMotor(){
+      setSendState(btnSendMotor, "pending");
+    }
+
+    // Amper +/- (0.1)
+    document.getElementById("ampMinus").addEventListener("click", () => {
+      amp = round1(clamp(amp - AMP_STEP, AMP_MIN, AMP_MAX));
+      renderMotor(); markPendingMotor(); persistAll();
+    });
+    document.getElementById("ampPlus").addEventListener("click", () => {
+      amp = round1(clamp(amp + AMP_STEP, AMP_MIN, AMP_MAX));
+      renderMotor(); markPendingMotor(); persistAll();
+    });
+
+    // Coal forward +/- (5 sec)
     document.getElementById("coalFwdMinus").addEventListener("click", () => {
-      coalFwdSec = clamp(coalFwdSec - 1, 0, 999);
+      coalFwdSec = clamp(coalFwdSec - TIME_STEP, TIME_MIN, TIME_MAX);
       renderMotor(); markPendingMotor(); persistAll();
     });
     document.getElementById("coalFwdPlus").addEventListener("click", () => {
-      coalFwdSec = clamp(coalFwdSec + 1, 0, 999);
+      coalFwdSec = clamp(coalFwdSec + TIME_STEP, TIME_MIN, TIME_MAX);
       renderMotor(); markPendingMotor(); persistAll();
     });
+
+    // Pause after forward +/- (5 sec)
+    document.getElementById("coalPauseMinus").addEventListener("click", () => {
+      coalPauseSec = clamp(coalPauseSec - TIME_STEP, TIME_MIN, TIME_MAX);
+      renderMotor(); markPendingMotor(); persistAll();
+    });
+    document.getElementById("coalPausePlus").addEventListener("click", () => {
+      coalPauseSec = clamp(coalPauseSec + TIME_STEP, TIME_MIN, TIME_MAX);
+      renderMotor(); markPendingMotor(); persistAll();
+    });
+
+    // Reverse +/- (5 sec)
     document.getElementById("coalRevMinus").addEventListener("click", () => {
-      coalRevSec = clamp(coalRevSec - 1, 0, 999);
+      coalRevSec = clamp(coalRevSec - TIME_STEP, TIME_MIN, TIME_MAX);
       renderMotor(); markPendingMotor(); persistAll();
     });
     document.getElementById("coalRevPlus").addEventListener("click", () => {
-      coalRevSec = clamp(coalRevSec + 1, 0, 999);
+      coalRevSec = clamp(coalRevSec + TIME_STEP, TIME_MIN, TIME_MAX);
       renderMotor(); markPendingMotor(); persistAll();
     });
 
@@ -836,55 +855,13 @@
       if(!tg) return;
       tg.sendData(JSON.stringify({
         type: "motor",
-        forward_sec: coalFwdSec,
-        reverse_sec: coalRevSec,
+        amp: amp,                 // tok kuchi
+        forward_sec: coalFwdSec,   // komir surish
+        pause_sec: coalPauseSec,   // toxtab turish
+        reverse_sec: coalRevSec,   // orqaga
         ts: Date.now()
       }));
       setSendState(btnSendMotor, "sent");
-      persistAll();
-      tg.showAlert(i18n[getLang()].sentOk);
-    });
-
-    // ===== AMPER =====
-    let ampValue = 20; // A
-    let ampSec = 30;   // s
-
-    const ampEl = document.getElementById("ampValue");
-    const ampSecEl = document.getElementById("ampSec");
-    const btnSendAmper = document.getElementById("sendAmper");
-
-    function renderAmper(){
-      ampEl.textContent = String(ampValue);
-      ampSecEl.textContent = String(ampSec);
-    }
-    function markPendingAmper(){ setSendState(btnSendAmper, "pending"); }
-
-    document.getElementById("ampMinus").addEventListener("click", () => {
-      ampValue = clamp(ampValue - 1, 0, 100);
-      renderAmper(); markPendingAmper(); persistAll();
-    });
-    document.getElementById("ampPlus").addEventListener("click", () => {
-      ampValue = clamp(ampValue + 1, 0, 100);
-      renderAmper(); markPendingAmper(); persistAll();
-    });
-    document.getElementById("ampSecMinus").addEventListener("click", () => {
-      ampSec = clamp(ampSec - 1, 0, 999);
-      renderAmper(); markPendingAmper(); persistAll();
-    });
-    document.getElementById("ampSecPlus").addEventListener("click", () => {
-      ampSec = clamp(ampSec + 1, 0, 999);
-      renderAmper(); markPendingAmper(); persistAll();
-    });
-
-    btnSendAmper.addEventListener("click", () => {
-      if(!tg) return;
-      tg.sendData(JSON.stringify({
-        type: "amper",
-        amp: ampValue,
-        sec: ampSec,
-        ts: Date.now()
-      }));
-      setSendState(btnSendAmper, "sent");
       persistAll();
       tg.showAlert(i18n[getLang()].sentOk);
     });
@@ -894,13 +871,11 @@
       saveJson(STORAGE_KEY, {
         temp, heat,
         powerOn, percent,
-        coalFwdSec, coalRevSec,
-        ampValue, ampSec,
+        motor: { amp, coalFwdSec, coalPauseSec, coalRevSec },
         send: {
           home: btnSendHome.classList.contains("sent") ? "sent" : (btnSendHome.classList.contains("pending") ? "pending" : "idle"),
           fan: btnSendFan.classList.contains("sent") ? "sent" : (btnSendFan.classList.contains("pending") ? "pending" : "idle"),
-          motor: btnSendMotor.classList.contains("sent") ? "sent" : (btnSendMotor.classList.contains("pending") ? "pending" : "idle"),
-          amper: btnSendAmper.classList.contains("sent") ? "sent" : (btnSendAmper.classList.contains("pending") ? "pending" : "idle")
+          motor: btnSendMotor.classList.contains("sent") ? "sent" : (btnSendMotor.classList.contains("pending") ? "pending" : "idle")
         },
         ts: Date.now()
       });
@@ -917,7 +892,6 @@
       home: document.getElementById("screenHome"),
       reports: document.getElementById("screenReports"),
       motor: document.getElementById("screenMotor"),
-      amper: document.getElementById("screenAmper"),
       discover: document.getElementById("screenDiscover"),
     };
 
@@ -943,28 +917,26 @@
       if(typeof saved.powerOn === "boolean") powerOn = saved.powerOn;
       if(typeof saved.percent === "number") percent = saved.percent;
 
-      if(typeof saved.coalFwdSec === "number") coalFwdSec = saved.coalFwdSec;
-      if(typeof saved.coalRevSec === "number") coalRevSec = saved.coalRevSec;
-
-      if(typeof saved.ampValue === "number") ampValue = saved.ampValue;
-      if(typeof saved.ampSec === "number") ampSec = saved.ampSec;
+      if(saved.motor){
+        if(typeof saved.motor.amp === "number") amp = round1(clamp(saved.motor.amp, AMP_MIN, AMP_MAX));
+        if(typeof saved.motor.coalFwdSec === "number") coalFwdSec = clamp(saved.motor.coalFwdSec, TIME_MIN, TIME_MAX);
+        if(typeof saved.motor.coalPauseSec === "number") coalPauseSec = clamp(saved.motor.coalPauseSec, TIME_MIN, TIME_MAX);
+        if(typeof saved.motor.coalRevSec === "number") coalRevSec = clamp(saved.motor.coalRevSec, TIME_MIN, TIME_MAX);
+      }
 
       if(saved.send){
         setSendState(btnSendHome, saved.send.home || "idle");
         setSendState(btnSendFan, saved.send.fan || "idle");
         setSendState(btnSendMotor, saved.send.motor || "idle");
-        setSendState(btnSendAmper, saved.send.amper || "idle");
       } else {
         setSendState(btnSendHome, "idle");
         setSendState(btnSendFan, "idle");
         setSendState(btnSendMotor, "idle");
-        setSendState(btnSendAmper, "idle");
       }
     } else {
       setSendState(btnSendHome, "idle");
       setSendState(btnSendFan, "idle");
       setSendState(btnSendMotor, "idle");
-      setSendState(btnSendAmper, "idle");
     }
 
     applyLang();
@@ -977,7 +949,6 @@
     renderHome();
     renderReports();
     renderMotor();
-    renderAmper();
     persistAll();
   </script>
 </body>
