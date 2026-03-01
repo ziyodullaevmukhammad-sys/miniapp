@@ -777,7 +777,21 @@
     const MIN_HEAT = 0;
     const MAX_HEAT = 100;
 
-    let temp = 69;
+    // ===== RANDOM TEMP =====
+    const TEMP_MIN = 0;
+    const TEMP_MAX = 100;
+    
+    function randInt(min, max){
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+    
+    let temp = randInt(TEMP_MIN, TEMP_MAX);
+    
+    function randomizeTemp(){
+      temp = randInt(TEMP_MIN, TEMP_MAX);
+      renderHome();
+    }
+    
     let heat = 76;
 
     const elTemp = document.getElementById("tempValue");
@@ -1034,6 +1048,10 @@
     function showScreen(name){
       Object.values(screens).forEach(s => s.classList.remove("active"));
       screens[name].classList.add("active");
+
+      if(name === "home"){
+        randomizeTemp();
+      }      
     }
 
     document.querySelectorAll(".navItem").forEach((item) => {
@@ -1087,6 +1105,8 @@
       tg.expand();
     }
 
+    randomizeTemp();
+    
     renderHome();
     renderReports();
     renderMotor();
@@ -1095,3 +1115,4 @@
   </script>
 </body>
 </html>
+
