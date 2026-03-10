@@ -84,7 +84,7 @@
     .sectionRow{
       display:flex;
       align-items:center;
-      justify-content:space-between;
+      justify-content:flex-start;
       padding: 6px 2px 10px;
       color: var(--tg-hint);
       font-size: 13px;
@@ -99,11 +99,6 @@
       background: rgba(255,255,255,0.22);
       border: 1px solid var(--stroke);
       flex: 0 0 auto;
-    }
-    .sectionRow .more{
-      color: var(--tg-hint);
-      opacity: .9;
-      user-select:none;
     }
 
     .card{
@@ -288,7 +283,6 @@
       letter-spacing: -0.5px;
     }
 
-    /* Rows for Motor/Settings blocks */
     .row2{
       display:flex;
       align-items:center;
@@ -339,7 +333,6 @@
       font-size:20px;
     }
 
-    /* Settings: device input row */
     .deviceBox{
       margin-top: 10px;
       border: 1px solid var(--stroke);
@@ -411,7 +404,6 @@
 <body>
   <div class="wrap">
 
-    <!-- Top bar -->
     <div class="topbar">
       <div class="left">
         <div class="pill" id="btnBack" title="Назад">≡</div>
@@ -419,19 +411,15 @@
           <div class="name" id="homeName">Mening uyim</div>
         </div>
       </div>
-      <div class="right">
-        <div class="pill" id="btnPlus" title="Добавить">＋</div>
-      </div>
+      <div class="right"></div>
     </div>
 
-    <!-- HOME SCREEN -->
     <div class="screen active" id="screenHome">
       <div class="sectionRow">
         <div class="secLeft">
           <div class="secDot"></div>
           <div id="floorName">Asosiy bo`lim</div>
         </div>
-        <div class="more" id="moreText">More ›</div>
       </div>
 
       <div class="card">
@@ -465,7 +453,6 @@
       </div>
     </div>
 
-    <!-- REPORTS SCREEN (FAN) -->
     <div class="screen" id="screenReports">
       <div class="card" style="margin-top:14px;">
         <div class="titleCenter" id="reportsTitle">Ventilyator tezligi</div>
@@ -491,7 +478,6 @@
       </div>
     </div>
 
-    <!-- MOTOR SCREEN -->
     <div class="screen" id="screenMotor">
       <div class="card" style="margin-top:14px;">
         <div class="titleCenter" id="motorTitle">Motor</div>
@@ -552,12 +538,10 @@
       </div>
     </div>
 
-    <!-- SETTINGS SCREEN -->
     <div class="screen" id="screenDiscover">
       <div class="card" style="margin-top:14px;">
         <div class="titleCenter" id="settingsTitle">Sozlamalar</div>
 
-        <!-- Device add/connect UI -->
         <div class="deviceBox">
           <div class="deviceTop">
             <div class="deviceTitle" id="addDeviceTitle">Qurilmani qo‘shish</div>
@@ -573,7 +557,6 @@
           </div>
         </div>
 
-        <!-- Language -->
         <div style="display:flex;flex-direction:column;gap:10px;margin-top:12px;">
           <div class="setBtn center" id="langBtn" title="Language">
             🌐 <span id="langBtnText">Til: O'zbek</span>
@@ -588,7 +571,6 @@
 
   </div>
 
-  <!-- Bottom nav -->
   <div class="bottomNav">
     <div class="navInner">
       <div class="navItem active" data-tab="home">
@@ -613,7 +595,6 @@
   <script>
     const tg = window.Telegram?.WebApp;
 
-    // ===== Storage =====
     const STORAGE_KEY = "smarthouse_state_v3";
     const LANG_KEY = "smarthouse_lang_v1";
     const DEVICE_ID_KEY = "smarthouse_device_id_v1";
@@ -633,12 +614,10 @@
       else alert(message);
     }
 
-    // ===== Language (UZ/RU) =====
     const i18n = {
       uz: {
         homeName: "Mening uyim",
         floorName: "Asosiy bo`lim",
-        more: "More ›",
         statusText: "Isitish",
         hint: "Joriy haroratni botga yuborish uchun ⇧ tugmasini bosing",
 
@@ -676,7 +655,6 @@
       ru: {
         homeName: "Мой дом",
         floorName: "Основной раздел",
-        more: "Ещё ›",
         statusText: "Отопление",
         hint: "Чтобы отправить значение боту, нажмите ⇧",
 
@@ -729,7 +707,6 @@
 
       document.getElementById("homeName").textContent = t.homeName;
       document.getElementById("floorName").textContent = t.floorName;
-      document.getElementById("moreText").textContent = t.more;
       document.getElementById("statusText").textContent = t.statusText;
       document.getElementById("hint").textContent = t.hint;
 
@@ -764,7 +741,6 @@
       document.getElementById("deviceIdInput").placeholder = t.devicePlaceholder;
     }
 
-    // ===== Common helpers =====
     function clamp(n, min, max){ return Math.max(min, Math.min(max, n)); }
 
     function setSendState(btn, state){
@@ -773,11 +749,9 @@
       if(state === "sent") btn.classList.add("sent");
     }
 
-    // ===== HOME (thermostat) =====
     const MIN_HEAT = 0;
     const MAX_HEAT = 100;
 
-    // ===== RANDOM TEMP =====
     const TEMP_MIN = 0;
     const TEMP_MAX = 100;
     
@@ -804,6 +778,9 @@
     }
     function markPendingHome(){
       setSendState(btnSendHome, "pending");
+    }
+    function getDeviceId(){
+      return (localStorage.getItem(DEVICE_ID_KEY) || "").trim();
     }
     function sendThermostatToBot(){
       if (!tg) return;
@@ -833,7 +810,6 @@
       persistAll();
     });
 
-    // ===== REPORTS (fan control) =====
     let powerOn = true;
     let percent = 50;
 
@@ -877,7 +853,6 @@
     });
     btnSendFan.addEventListener("click", sendFanToBot);
 
-    // ===== MOTOR =====
     const TIME_STEP = 5;
     const TIME_MIN = 0;
     const TIME_MAX = 999;
@@ -961,15 +936,11 @@
       showOk(i18n[getLang()].sentOk);
     });
 
-    // ===== Device connect (Settings) =====
     const deviceInput = document.getElementById("deviceIdInput");
     const deviceConnectBtn = document.getElementById("deviceConnectBtn");
     const connectedLine = document.getElementById("connectedLine");
     const connectedId = document.getElementById("connectedId");
 
-    function getDeviceId(){
-      return (localStorage.getItem(DEVICE_ID_KEY) || "").trim();
-    }
     function setDeviceId(id){
       localStorage.setItem(DEVICE_ID_KEY, (id || "").trim());
     }
@@ -979,7 +950,6 @@
       const t = i18n[lang];
       const id = getDeviceId();
 
-      // connected line
       if (id){
         connectedLine.style.display = "block";
         connectedLine.innerHTML = `${t.deviceConnected}: <b id="connectedId"></b>`;
@@ -989,10 +959,8 @@
         connectedId.textContent = "";
       }
 
-      // input value if empty
       if (!deviceInput.value.trim() && id) deviceInput.value = id;
 
-      // button enabled state
       const hasText = deviceInput.value.trim().length > 0;
       deviceConnectBtn.classList.toggle("enabled", hasText);
     }
@@ -1007,7 +975,6 @@
       renderDevice();
       persistAll();
 
-      // optional: botga ham yuboramiz (device bind)
       if (tg){
         tg.sendData(JSON.stringify({ type: "device_bind", device_id: id, ts: Date.now() }));
       }
@@ -1015,7 +982,6 @@
       showOk(i18n[getLang()].deviceSuccess);
     });
 
-    // ===== Persist all =====
     function persistAll(){
       saveJson(STORAGE_KEY, {
         temp, heat,
@@ -1031,13 +997,11 @@
       });
     }
 
-    // ===== SETTINGS (language button) =====
     document.getElementById("langBtn").addEventListener("click", () => {
       const next = getLang() === "uz" ? "ru" : "uz";
       setLang(next);
     });
 
-    // ===== Screens switch =====
     const screens = {
       home: document.getElementById("screenHome"),
       reports: document.getElementById("screenReports"),
@@ -1051,7 +1015,7 @@
 
       if(name === "home"){
         randomizeTemp();
-      }      
+      }
     }
 
     document.querySelectorAll(".navItem").forEach((item) => {
@@ -1062,7 +1026,6 @@
       });
     });
 
-    // ===== Init =====
     const saved = loadJson(STORAGE_KEY);
     if(saved){
       if(typeof saved.temp === "number") temp = saved.temp;
@@ -1088,7 +1051,6 @@
         setSendState(btnSendMotor, "idle");
       }
 
-      // device id
       if (typeof saved.device_id === "string" && saved.device_id.trim()){
         setDeviceId(saved.device_id.trim());
       }
@@ -1106,7 +1068,6 @@
     }
 
     randomizeTemp();
-    
     renderHome();
     renderReports();
     renderMotor();
@@ -1115,4 +1076,3 @@
   </script>
 </body>
 </html>
-
