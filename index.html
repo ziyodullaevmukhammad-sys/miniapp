@@ -523,7 +523,7 @@
             <div class="t1" id="coalRevLbl">Orqaga aylantirish</div>
             <div class="t2" id="coalRevHint">Vaqti (sekund), 0–999 (qadam 5)</div>
           </div>
-          <div class="val"><span id="coalRevSec">1</span>s</div>
+          <div class="val"><span id="coalRevSec">5</span>s</div>
           <div class="miniCtrls">
             <div class="mini" id="coalRevMinus">−</div>
             <div class="mini" id="coalRevPlus">＋</div>
@@ -912,11 +912,11 @@
     });
 
     document.getElementById("coalRevMinus").addEventListener("click", () => {
-      coalRevSec = clamp(coalRevSec - TIME_STEP, TIME_MIN, TIME_MAX);
+      coalRevSec = clamp(coalRevSec - 1, TIME_MIN, TIME_MAX);
       renderMotor(); markPendingMotor(); persistAll();
     });
     document.getElementById("coalRevPlus").addEventListener("click", () => {
-      coalRevSec = clamp(coalRevSec + TIME_STEP, TIME_MIN, TIME_MAX);
+      coalRevSec = clamp(coalRevSec + 1, TIME_MIN, TIME_MAX);
       renderMotor(); markPendingMotor(); persistAll();
     });
 
@@ -1076,4 +1076,5 @@
   </script>
 </body>
 </html>
+
 
